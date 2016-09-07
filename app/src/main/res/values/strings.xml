@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">YZU NEWS</string>
+
+    <string name="action_settings">设置</string>
+    <string name="action_about">关于</string>
+    <string name="action_refresh">刷新</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
+    <string name="setting_cache">新闻图片缓存</string>
+
+</resources>
