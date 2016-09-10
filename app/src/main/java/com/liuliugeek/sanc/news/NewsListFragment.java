@@ -20,6 +20,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import in.srain.cube.views.ptr.PtrClassicFrameLayout;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+
 
 /**
  * Created by 73732 on 2016/8/19.
@@ -29,9 +34,10 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     private static final int SHOW_CONTENT = 0;
     private static  final int ADD_LIST = 1;
     private static final int SHOW_ERROR_NETWORK = 2;
+    private static final int REFRESH_LIST = 3;
     private static int THREAD_COUNT = 0;
 
-    private int typeid = 3;
+    private int typeid = 0;
 
     private FragmentManager fragmentManager;
     private ArrayList<Data> datas;
@@ -44,6 +50,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     private TextView loadMoreTextView;
     private View loadMoreView;
+    private PtrClassicFrameLayout ptrClassicFrameLayout;
 
     private int visibleLastIndex = 0;
     private int visibleItemCount;
@@ -97,6 +104,36 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     THREAD_COUNT=0;
                     //Log.v("list_count", String.valueOf(newsAdapter.getCount()));
                     break;
+                case REFRESH_LIST:
+                    parseListDom = new ParseListDom((String)msg.obj);
+                    int typeid = msg.arg1;
+                    //parseListDom.getUrlList();
+                    datas = new ArrayList<>();
+                    //Log.v("count", String.valueOf(parseListDom.getTitleList().size()));
+                    for(int i = 0; i<21; i++){
+                        //Log.v("getUrl",parseListDom.getUrlList().get(i));
+                        //此处content放的是页面地址
+                        //Data data = new Data("("+parseListDom.getTimeList().get(i).substring(5) + ")" + parseListDom.getTitleList().get(i),parseListDom.getUrlList().get(i));
+                        Data data = new Data();
+                        data.setNewTitle(parseListDom.getTitleList().get(i));
+                        data.setNewContent(parseListDom.getUrlList().get(i));
+                        data.setNewUrl(parseListDom.getUrlList().get(i));
+                        data.setNewTypeid(typeid);
+                        data.setNewArcid(Integer.valueOf(data.getNewContent().replaceAll(".*[^\\d](?=(\\d+))", "")));
+                        data.setNewDate(parseListDom.getTimeList().get(i));
+                        // Log.v("id", String.valueOf(data.getNewArcid()));
+                        datas.add(data);
+                    }
+                    newsAdapter = new NewsAdapter(datas, getActivity());
+                    newsList.setAdapter(newsAdapter);
+                    newsAdapter.notifyDataSetChanged();
+                    //Log.v("typeid_refresh_in_handler", String.valueOf(getTypeId()));
+                    dbManager.deleteContent(getTypeId());
+                    //将数据存进本地数据库
+                    dbManager.add(datas);
+                    dbManager.closeDB();
+                    THREAD_COUNT=0;
+                    break;
                 case SHOW_ERROR_NETWORK:
                     Toast.makeText(getActivity(), "网络错误！", Toast.LENGTH_LONG).show();
                     break;
@@ -118,8 +155,39 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_list, container ,false);
+        ptrClassicFrameLayout = (PtrClassicFrameLayout) view.findViewById(R.id.ptr_refresh);
+        ptrClassicFrameLayout.setLastUpdateTimeRelateObject(this);
+        // the following are default settings
+        ptrClassicFrameLayout.setResistance(1.7f);
+        ptrClassicFrameLayout.setRatioOfHeaderHeightToRefresh(1.2f);
+        ptrClassicFrameLayout.setDurationToClose(200);
+        ptrClassicFrameLayout.setDurationToCloseHeader(1000);
+// default is false
+        ptrClassicFrameLayout.setPullToRefresh(false);
+// default is true
+        ptrClassicFrameLayout.setKeepHeaderWhenRefresh(true);
+        ptrClassicFrameLayout.setLoadingMinTime(2000);
+        ptrClassicFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
+            }
+
+            @Override
+            public void onRefreshBegin(final PtrFrameLayout ptrFrameLayout) {
+                ptrClassicFrameLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(THREAD_COUNT == 0) {
+                            THREAD_COUNT++;
+                            refreshListData();
+                        }
+                        ptrClassicFrameLayout.refreshComplete();
+                    }
+                });
+            }
+        });
         loadMoreView = inflater.inflate(R.layout.load_more, null);
-        //loadMoreButton = (Button)loadMoreView.findViewById(R.id.loadmore_button);
         loadMoreTextView = (TextView) loadMoreView.findViewById(R.id.loadmore_text);
         newsList = (ListView) view.findViewById(R.id.list_news);
         newsList.addFooterView(loadMoreView);
@@ -146,6 +214,31 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
 
         return view;
+    }
+
+    public void refreshListData(){
+        dbManager = new NewsDbManager(getActivity());
+        fragmentManager = getFragmentManager();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(null != MyHttp.getActiveNetwork(getActivity())){
+                    Log.v("typeid_refresh", String.valueOf(getTypeId()));
+                    myHttp = new MyHttp("http://news.yzu.edu.cn/list.asp?TypeID="+getTypeId()+"&Page=1","GBK");
+                    myHttp.startCon();
+                    String tempHtmlText = myHttp.getResult();
+                    Message message = new Message();
+                    message.what = REFRESH_LIST;
+                    message.obj = tempHtmlText;
+                    message.arg1 = getTypeId();
+                    handler.sendMessage(message);
+                }else{
+                    Message message = new Message();
+                    message.what = SHOW_ERROR_NETWORK;
+                    handler.sendMessage(message);
+                }
+            }
+        }).start();
     }
 
     public void sendMsgToGetContent(int position){
