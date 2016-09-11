@@ -18,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
@@ -126,12 +128,14 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     }
                     newsAdapter = new NewsAdapter(datas, getActivity());
                     newsList.setAdapter(newsAdapter);
-                    newsAdapter.notifyDataSetChanged();
                     //Log.v("typeid_refresh_in_handler", String.valueOf(getTypeId()));
                     dbManager.deleteContent(getTypeId());
+                    //更新刷新时间
+                    dbManager.setBoardRefreshDate(getTypeId(), getDate());
                     //将数据存进本地数据库
                     dbManager.add(datas);
                     dbManager.closeDB();
+                    newsAdapter.notifyDataSetChanged();
                     THREAD_COUNT=0;
                     break;
                 case SHOW_ERROR_NETWORK:
@@ -155,18 +159,37 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_list, container ,false);
+
+        loadMoreView = inflater.inflate(R.layout.load_more, null);
+        loadMoreTextView = (TextView) loadMoreView.findViewById(R.id.loadmore_text);
+        newsList = (ListView) view.findViewById(R.id.list_news);
+        newsList.addFooterView(loadMoreView);
+        newsList.setOnScrollListener(this);
+
         ptrClassicFrameLayout = (PtrClassicFrameLayout) view.findViewById(R.id.ptr_refresh);
         ptrClassicFrameLayout.setLastUpdateTimeRelateObject(this);
-        // the following are default settings
         ptrClassicFrameLayout.setResistance(1.7f);
         ptrClassicFrameLayout.setRatioOfHeaderHeightToRefresh(1.2f);
         ptrClassicFrameLayout.setDurationToClose(200);
         ptrClassicFrameLayout.setDurationToCloseHeader(1000);
-// default is false
         ptrClassicFrameLayout.setPullToRefresh(false);
-// default is true
         ptrClassicFrameLayout.setKeepHeaderWhenRefresh(true);
         ptrClassicFrameLayout.setLoadingMinTime(2000);
+        //判断今天是否刷新决定是否自动刷新
+        dbManager = new NewsDbManager(getActivity());
+        //没有刷新并且列表不为空才会调用
+        Log.v("is_list_empty", String.valueOf(dbManager.isListEmpty(getTypeId())));
+        if (!dbManager.isRefresh(getTypeId()) || dbManager.isListEmpty(getTypeId())){
+            ptrClassicFrameLayout.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ptrClassicFrameLayout.autoRefresh(true);
+                }
+            },800);
+        }else{
+            newsAdapter = new NewsAdapter(datas, getActivity());
+            newsList.setAdapter(newsAdapter);
+        }
         ptrClassicFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
@@ -178,7 +201,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 ptrClassicFrameLayout.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(THREAD_COUNT == 0) {
+                        if (THREAD_COUNT == 0) {
                             THREAD_COUNT++;
                             refreshListData();
                         }
@@ -187,13 +210,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 });
             }
         });
-        loadMoreView = inflater.inflate(R.layout.load_more, null);
-        loadMoreTextView = (TextView) loadMoreView.findViewById(R.id.loadmore_text);
-        newsList = (ListView) view.findViewById(R.id.list_news);
-        newsList.addFooterView(loadMoreView);
-        newsAdapter = new NewsAdapter(datas, getActivity());
-        newsList.setAdapter(newsAdapter);
-        newsList.setOnScrollListener(this);
+
         /*loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -303,7 +320,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && visibleLastIndex == lastIndex){
             //滑动停止状态
             //异步加载代码在这放
-            handler.post(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Log.v("threadcount", String.valueOf(THREAD_COUNT));
@@ -317,7 +334,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                         loadMoreTextView.setText("加载中...");
                     }
                 }
-            });
+            },1200);
             Log.v("LOADMORE", "loading");
         }
     }
@@ -354,6 +371,12 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     }
                 }
             }).start();
+    }
+
+    private String getDate(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date(System.currentTimeMillis());
+        return format.format(date);
     }
 
     public void setTypeID(int id){

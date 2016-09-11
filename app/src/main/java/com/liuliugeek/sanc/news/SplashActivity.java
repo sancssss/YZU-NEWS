@@ -9,7 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class SplashActivity extends Activity{
@@ -73,7 +75,8 @@ public class SplashActivity extends Activity{
                     }
                     manager.deleteContent(indexDataId);
                     //将数据存进本地数据库
-                   manager.add(datas);
+                    manager.add(datas);
+                    manager.setBoardRefreshDate(indexDataId,getDate());
                 }else{
                     Message message = new Message();
                     message.what = SHOW_ERROR_NETWORK;
@@ -113,5 +116,10 @@ public class SplashActivity extends Activity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private String getDate(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date(System.currentTimeMillis());
+        return format.format(date);
     }
 }

@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Created by 73732 on 2016/8/28.
  */
-public class NewsDatabaseHelper  extends SQLiteOpenHelper {
+public class NewsDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_NEWS = "create table news("
             + "news_id integer primary key autoincrement, "
@@ -43,11 +43,15 @@ public class NewsDatabaseHelper  extends SQLiteOpenHelper {
                 new String[] { "9","暖情校园" });
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "10","缤纷扬大" });
+        db.execSQL("alter table board add date text");
+        db.execSQL("alter table board add is_refresh integer default 0");
         Log.v("sql_create", "sql create");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("alter table board add date text");
+        db.execSQL("alter table board add is_refresh integer default 0");
+        Log.v("sql_upgrade", "sql upgrade");
     }
 }

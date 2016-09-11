@@ -180,27 +180,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             fragmentTransaction.replace(R.id.fl_content, newsListFragment);
             fragmentTransaction.commit();
         }else {
-            fragmentManager = getFragmentManager();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if(null != MyHttp.getActiveNetwork(MainActivity.this)){
-                        myHttp = new MyHttp("http://news.yzu.edu.cn/list.asp?TypeID="+typeid+"&Page=1","GBK");
-                        myHttp.startCon();
-                        String tempHtmlText = myHttp.getResult();
-                        Message message = new Message();
-                        message.what = SHOW_LIST;
-                        message.obj = tempHtmlText;
-                        message.arg1 = titleid;
-                        message.arg2 = typeid;
-                        handler.sendMessage(message);
-                    }else{
-                        Message message = new Message();
-                        message.what = SHOW_ERROR_NETWORK;
-                        handler.sendMessage(message);
-                    }
-                }
-            }).start();
+            Log.v("is_from_network", "now datas is from network");
+            //设置标题：扬大要闻
+            //newsTitle.setText(mPlanetTitles[titleid]);
+            getActionBar().setTitle(mPlanetTitles[titleid]);
+            ArrayList<Data> datas = new ArrayList();
+            NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
+            //扬大要闻typeid
+            newsListFragment.setTypeID(typeid);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fl_content, newsListFragment);
+            fragmentTransaction.commit();
         }
     }
 
