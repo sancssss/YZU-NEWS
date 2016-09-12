@@ -19,7 +19,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="扬大新闻 V1.01"
+        android:text="扬大新闻 V1.1"
         android:textColor="@color/material_grey_100"
         android:background="#2196F3"
         android:textSize="14sp"/>

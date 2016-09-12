@@ -57,6 +57,7 @@ public class NewContentFragemnt extends Fragment {
                         if(THREAD_COUNT == 0){
                             newsContent.setText(Html.fromHtml(getArguments().getString("content"), imageGetter, null));
                         }
+                        Log.v("activeCount", String.valueOf(Thread.activeCount()));
                         break;
                     case SHOW_ERROR_NETWORK:
                         Toast.makeText(getActivity(), "网络错误无法加载 +网络图片！", Toast.LENGTH_LONG).show();
@@ -134,6 +135,7 @@ public class NewContentFragemnt extends Fragment {
                             AsyncLoadNetWorkPic netWorkPic = new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source);
                             Thread loadpic = new Thread(netWorkPic);
                             loadpic.start();
+                            Log.v("activeCount", String.valueOf(Thread.activeCount()));
                             try {
                                 loadpic.join();
                             } catch (InterruptedException e) {
