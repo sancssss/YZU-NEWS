@@ -14,14 +14,14 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.WindowManager;
-import android.view.Display;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by 73732 on 2016/8/19.
@@ -46,6 +49,7 @@ public class NewContentFragemnt extends Fragment {
     private NetWorkImageGetter imageGetter;
     private int screenWidth;
     private int screenHeight;
+    private ExecutorService fixedThreadPool;
 
     private Handler handler = new Handler(){
         @Override
@@ -54,13 +58,13 @@ public class NewContentFragemnt extends Fragment {
                 switch (msg.what){
                     case UPDATE_CONTENT:
                         Log.v("Handler", "handler");
+                        Log.v("poolThreadcount", String.valueOf(((ThreadPoolExecutor)fixedThreadPool).getActiveCount()));
                         if(THREAD_COUNT == 0){
                             newsContent.setText(Html.fromHtml(getArguments().getString("content"), imageGetter, null));
                         }
-                        Log.v("activeCount", String.valueOf(Thread.activeCount()));
                         break;
                     case SHOW_ERROR_NETWORK:
-                        Toast.makeText(getActivity(), "网络错误无法加载 +网络图片！", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "网络错误无法加载网络图片！", Toast.LENGTH_LONG).show();
                         break;
                 }
             }
@@ -132,15 +136,17 @@ public class NewContentFragemnt extends Fragment {
                             message.what = SHOW_ERROR_NETWORK;
                             handler.sendMessage(message);
                         }else{
-                            AsyncLoadNetWorkPic netWorkPic = new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source);
-                            Thread loadpic = new Thread(netWorkPic);
-                            loadpic.start();
-                            Log.v("activeCount", String.valueOf(Thread.activeCount()));
-                            try {
-                                loadpic.join();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            fixedThreadPool = Executors.newFixedThreadPool(3);
+                            fixedThreadPool.execute(new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source));
+                            //AsyncLoadNetWorkPic netWorkPic = new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source);
+                            //Thread loadpic = new Thread(netWorkPic);
+                            //loadpic.start();
+                           // Log.v("activeCountPool", String.valueOf( String.valueOf(((ThreadPoolExecutor) fixedThreadPool).getActiveCount())));
+                           // try {
+                               // loadpic.join();
+                           // } catch (InterruptedException e) {
+                            //    e.printStackTrace();
+                           // }
                         }
                     }
                 }
@@ -156,12 +162,13 @@ public class NewContentFragemnt extends Fragment {
         }
         //新线程下载图片保存
         public void run() {
-            THREAD_COUNT++;
-            Log.v("loadpic thread","load pic thread");
+            //
+           // Log.v("loadpic thread","load pic thread");
             //再创建一个线程以后台下载
-             new Thread(new Runnable() {
-                 @Override
-                 public void run() {
+            // new Thread(new Runnable() {
+                // @Override
+                // public void run() {
+                     THREAD_COUNT++;
                      String path = AsyncLoadNetWorkPic.this.url;
                      File file = new File(String.valueOf(Environment.getExternalStorageDirectory())+"/yzunew_pic/",url.substring(34));
                      InputStream in = null;
@@ -211,10 +218,10 @@ public class NewContentFragemnt extends Fragment {
                          }
                      }
                  }
-             }).start();
+   //          }).start();
 
         }
-    }
+   // }
     public static NetworkInfo getActiveNetwork(Context context){
         if (context == null)
             return null;
