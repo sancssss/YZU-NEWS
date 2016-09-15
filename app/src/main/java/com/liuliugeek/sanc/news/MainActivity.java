@@ -19,11 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,10 +32,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private static final int SHOW_ERROR_NETWORK = 1;
     //private static final int SHOW_CONTENT = 1;
 
-    private TextView newsTitle;
-    private FrameLayout fl_content;
     private Context mContext;
-    private String mPlanetTitles[];
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -63,8 +57,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private PagerTabStrip tabStrip;
 
 
-    private ArrayList<View> viewContainer = new ArrayList<View>();
-    private ArrayList<String> titleContainer = new ArrayList<String>();
+    private ArrayList<DrawerListData> drawerListDatas;
 
     private Handler handler = new Handler(){
         @Override
@@ -91,7 +84,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                     }
                     //将数据存进本地数据库
                     dbManager.add(datas);
-                    getActionBar().setTitle(mPlanetTitles[msg.arg1]);
+                    getActionBar().setTitle(drawerListDatas.get(msg.arg1).getItemName());
                     //newsTitle.setText(mPlanetTitles[msg.arg1]);
                     NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
                     newsListFragment.setTypeID(msg.arg2);
@@ -170,7 +163,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             Log.v("is_from_db", "now datas is from db");
             //设置标题：扬大要闻
             //newsTitle.setText(mPlanetTitles[titleid]);
-            getActionBar().setTitle(mPlanetTitles[titleid]);
+            getActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
             ArrayList<Data> datas = new ArrayList<Data>();
             datas = dbManager.query(typeid);
             NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
@@ -183,7 +176,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             Log.v("is_from_network", "now datas is from network");
             //设置标题：扬大要闻
             //newsTitle.setText(mPlanetTitles[titleid]);
-            getActionBar().setTitle(mPlanetTitles[titleid]);
+            getActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
             ArrayList<Data> datas = new ArrayList();
             NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
             //扬大要闻typeid
@@ -250,8 +243,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     }
 
     private void blindView(){
-        //newsTitle = (TextView) findViewById(R.id.txt_title);
-        fl_content = (FrameLayout) findViewById(R.id.fl_content);
 
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.left_drawer);
@@ -265,9 +256,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private void init(){
         //启动db manage
         dbManager = new NewsDbManager(this);
-        mPlanetTitles = new String[]{"扬大要闻","媒体扬大","综合报道","校报传真","暖情校园","缤纷扬大"};
+        drawerListDatas = new ArrayList<>();
+        initDrawerList();
         mContext = MainActivity.this;
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new DrawerListAdapter(drawerListDatas,mContext));
         getActionBar().setDisplayHomeAsUpEnabled(true);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name);
         fragmentManager = getFragmentManager();
@@ -294,6 +286,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         */
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerList.setOnItemClickListener(this);
+
+    }
+
+    public void initDrawerList(){
+        drawerListDatas.add(new DrawerListData("扬大要闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("媒体扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("综合报道",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("校报传真",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("暖情校园",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("缤纷扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
 
     }
 
