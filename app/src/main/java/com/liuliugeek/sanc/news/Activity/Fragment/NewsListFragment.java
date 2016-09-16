@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Activity.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
@@ -18,9 +18,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
+import com.liuliugeek.sanc.news.Model.Data;
+import com.liuliugeek.sanc.news.MyHttp.MyHttp;
+import com.liuliugeek.sanc.news.Adapter.NewsAdapter;
+import com.liuliugeek.sanc.news.Parse.ParseContentDom;
+import com.liuliugeek.sanc.news.Parse.ParseListDom;
+import com.liuliugeek.sanc.news.Parse.ParseSpecialContentDom;
+import com.liuliugeek.sanc.news.Parse.ParseSpecialListDom;
+import com.liuliugeek.sanc.news.R;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
@@ -44,9 +55,11 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     private FragmentManager fragmentManager;
     private ArrayList<Data> datas;
     private ListView newsList;
-    private  MyHttp myHttp;
+    private MyHttp myHttp;
     private ParseContentDom parseContentDom;
+    private ParseSpecialContentDom parseSpecialContentDom;
     private ParseListDom parseListDom;
+    private ParseSpecialListDom parseSpecialListDom;
     private int tempPosition;
     private NewsAdapter newsAdapter;
 
@@ -70,19 +83,23 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     Bundle bd = new Bundle();
-                    parseContentDom = (ParseContentDom)msg.obj;
-                    bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+parseContentDom.getContent());
-                    bd.putString("url",datas.get(position).getNewUrl());
-                    bd.putString("title",datas.get(position).getNewTitle());
-                    //从原网址中获取id
-                    int arcid = Integer.parseInt(datas.get(position).getNewContent().replaceAll(".*[^\\d](?=(\\d+))", ""));
-                    //更新本地数据库
                     dbManager = new NewsDbManager(getActivity());
-                    dbManager.updateContent(arcid,parseContentDom.getContent());
+                    if(getTypeId() < 100){
+                        parseContentDom = (ParseContentDom)msg.obj;
+                        bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+parseContentDom.getContent());
+                        dbManager.updateContent(datas.get(position).getNewArcid(), parseContentDom.getContent());
+                    }else{
+                        parseSpecialContentDom = (ParseSpecialContentDom)msg.obj;
+                        bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+parseSpecialContentDom.getContent());
+                        dbManager.updateContent(datas.get(position).getNewArcid(),parseSpecialContentDom.getContent());
+                    }
+                    bd.putInt("typeid",getTypeId());
+                    bd.putString("url", datas.get(position).getNewUrl());
+                    bd.putString("title",datas.get(position).getNewTitle());
+                    //更新本地数据库
                     dbManager.closeDB();
-                    Log.v("update_news",parseContentDom.getContent());
+                   // Log.v("update_news",parseContentDom.getContent());
                     newContentFragemnt.setArguments(bd);
-                    TextView newsTitle = (TextView) getActivity().findViewById(R.id.txt_title);
                     //getActivity().getActionBar().setTitle(datas.get(position).getNewTitle());
                     // fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit);
                     fragmentTransaction.replace(R.id.fl_content, newContentFragemnt);
@@ -90,16 +107,36 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     fragmentTransaction.commit();
                     break;
                 case  ADD_LIST:
-                    parseListDom = new ParseListDom((String)msg.obj);
-                    for(int i = 0; i < 21;i++){
-                        //Log.v("url",parseListDom.getUrlList().get(i));+
+                    List<String> tempTitleList = new ArrayList<>();
+                    List<String> tempUrlList = new ArrayList<>();
+                    List<String> tempTimeList = new ArrayList<>();
+                    int count = 0;
+                    //Log.v("count", String.valueOf(parseListDom.getTitleList().size()));
+                    if(getTypeId() < 100){
+                        parseListDom = new ParseListDom((String)msg.obj);
+                        tempTitleList = parseListDom.getTitleList();
+                        tempUrlList = parseListDom.getUrlList();
+                        tempTimeList = parseListDom.getTimeList();
+                        count = 21;
+                    }else{
+                        parseSpecialListDom = new ParseSpecialListDom((String)msg.obj);
+                        tempTitleList = parseSpecialListDom.getTitleList();
+                        tempUrlList = parseSpecialListDom.getUrlList();
+                        tempTimeList = parseSpecialListDom.getTimeList();
+                        count = 60;
+                    }
+                    for(int i = 0; i<count; i++){
+                        //Log.v("getUrl",parseListDom.getUrlList().get(i));
+                        //此处content放的是页面地址
+                        //Data data = new Data("("+parseListDom.getTimeList().get(i).substring(5) + ")" + parseListDom.getTitleList().get(i),parseListDom.getUrlList().get(i));
                         Data data = new Data();
-                        data.setNewTitle(parseListDom.getTitleList().get(i));
-                        data.setNewContent(parseListDom.getUrlList().get(i));
-                        data.setNewUrl(parseListDom.getUrlList().get(i));
-                        data.setNewTypeid(msg.arg2);
-                        data.setNewArcid(Integer.valueOf(data.getNewContent().replaceAll(".*[^\\d](?=(\\d+))", "")));
-                        data.setNewDate(parseListDom.getTimeList().get(i));
+                        data.setNewTitle(tempTitleList.get(i));
+                        data.setNewContent(tempUrlList.get(i));
+                        data.setNewUrl(tempUrlList.get(i));
+                        data.setNewTypeid(getTypeId());
+                        data.setNewArcid(Integer.valueOf(data.getNewContent().replaceAll(".*[^\\d](?=(\\d+))", "").replace(".html","")));
+                        data.setNewDate(tempTimeList.get(i));
+                        // Log.v("id", String.valueOf(data.getNewArcid()));
                         newsAdapter.addItem(data);
                     }
                     newsAdapter.notifyDataSetChanged();
@@ -107,22 +144,37 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     //Log.v("list_count", String.valueOf(newsAdapter.getCount()));
                     break;
                 case REFRESH_LIST:
-                    parseListDom = new ParseListDom((String)msg.obj);
-                    int typeid = msg.arg1;
                     //parseListDom.getUrlList();
                     datas = new ArrayList<>();
+                    tempTitleList = new ArrayList<>();
+                    tempUrlList = new ArrayList<>();
+                    tempTimeList = new ArrayList<>();
+                    count = 0;
                     //Log.v("count", String.valueOf(parseListDom.getTitleList().size()));
-                    for(int i = 0; i<21; i++){
+                    if(getTypeId() < 100){
+                        parseListDom = new ParseListDom((String)msg.obj);
+                        tempTitleList = parseListDom.getTitleList();
+                        tempUrlList = parseListDom.getUrlList();
+                        tempTimeList = parseListDom.getTimeList();
+                        count = 21;
+                    }else{
+                        parseSpecialListDom = new ParseSpecialListDom((String)msg.obj);
+                        tempTitleList = parseSpecialListDom.getTitleList();
+                        tempUrlList = parseSpecialListDom.getUrlList();
+                        tempTimeList = parseSpecialListDom.getTimeList();
+                        count = 60;
+                    }
+                    for(int i = 0; i<count; i++){
                         //Log.v("getUrl",parseListDom.getUrlList().get(i));
                         //此处content放的是页面地址
                         //Data data = new Data("("+parseListDom.getTimeList().get(i).substring(5) + ")" + parseListDom.getTitleList().get(i),parseListDom.getUrlList().get(i));
                         Data data = new Data();
-                        data.setNewTitle(parseListDom.getTitleList().get(i));
-                        data.setNewContent(parseListDom.getUrlList().get(i));
-                        data.setNewUrl(parseListDom.getUrlList().get(i));
-                        data.setNewTypeid(typeid);
-                        data.setNewArcid(Integer.valueOf(data.getNewContent().replaceAll(".*[^\\d](?=(\\d+))", "")));
-                        data.setNewDate(parseListDom.getTimeList().get(i));
+                        data.setNewTitle(tempTitleList.get(i));
+                        data.setNewContent(tempUrlList.get(i));
+                        data.setNewUrl(tempUrlList.get(i));
+                        data.setNewTypeid(getTypeId());
+                        data.setNewArcid(Integer.valueOf(data.getNewContent().replaceAll(".*[^\\d](?=(\\d+))", "").replace(".html","")));
+                        data.setNewDate(tempTimeList.get(i));
                         // Log.v("id", String.valueOf(data.getNewArcid()));
                         datas.add(data);
                     }
@@ -185,7 +237,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 public void run() {
                     ptrClassicFrameLayout.autoRefresh(true);
                 }
-            },800);
+            },100);
         }else{
             newsAdapter = new NewsAdapter(datas, getActivity());
             newsList.setAdapter(newsAdapter);
@@ -203,7 +255,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     public void run() {
                         if (THREAD_COUNT == 0) {
                             THREAD_COUNT++;
-                            refreshListData();
+                            refreshList();
                         }
                         ptrClassicFrameLayout.refreshComplete();
                     }
@@ -233,6 +285,15 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         return view;
     }
 
+
+    public void refreshList(){
+        if(getTypeId() < 100){
+            refreshListData();
+        }else{
+            refreshSpecialListData();
+        }
+    }
+
     public void refreshListData(){
         dbManager = new NewsDbManager(getActivity());
         fragmentManager = getFragmentManager();
@@ -244,6 +305,33 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     myHttp = new MyHttp("http://news.yzu.edu.cn/list.asp?TypeID="+getTypeId()+"&Page=1","GBK");
                     myHttp.startCon();
                     String tempHtmlText = myHttp.getResult();
+                    Message message = new Message();
+                    message.what = REFRESH_LIST;
+                    message.obj = tempHtmlText;
+                    message.arg1 = getTypeId();
+                    handler.sendMessage(message);
+                }else{
+                    Message message = new Message();
+                    message.what = SHOW_ERROR_NETWORK;
+                    handler.sendMessage(message);
+                }
+            }
+        }).start();
+    }
+
+    public void refreshSpecialListData(){
+        dbManager = new NewsDbManager(getActivity());
+        fragmentManager = getFragmentManager();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(null != MyHttp.getActiveNetwork(getActivity())){
+                    Log.v("typeid_refresh", String.valueOf(getTypeId()));
+                    myHttp = new MyHttp("http://www.yzu.edu.cn/module/jslib/jquery/jpage/dataproxy.jsp?startrecord=1&endrecord=60&perpage=20","UTF-8");
+                    myHttp.setPostVal("col=1&appid=1&webid=100&path=%2F&columnid=" + getTypeId() + "&sourceContentType=1&unitid=55987&webname=%E6%89%AC%E5%B7%9E%E5%A4%A7%E5%AD%A6&permissiontype=0");
+                    myHttp.startSpecialCon();
+                    String tempHtmlText = myHttp.getResult();
+                    Log.v("specailHtml",tempHtmlText);
                     Message message = new Message();
                     message.what = REFRESH_LIST;
                     message.obj = tempHtmlText;
@@ -278,6 +366,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+content);
                 bd.putString("url",datas.get(position).getNewUrl());
                 bd.putString("title",datas.get(position).getNewTitle());
+                bd.putInt("typeid", getTypeId());
 
                 newContentFragemnt.setArguments(bd);
                 TextView newsTitle = (TextView) getActivity().findViewById(R.id.txt_title);
@@ -294,14 +383,22 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
-                            myHttp = new MyHttp(datas.get(tempPosition).getNewContent(), "GBK");
-                            myHttp.startCon();
-                            parseContentDom = new ParseContentDom(myHttp.getResult());
                             Message message = new Message();
                             message.what = SHOW_CONTENT;
-                            message.obj = parseContentDom;
-                            message.arg1 = tempPosition;
+                            if(getTypeId() < 100){
+                                myHttp = new MyHttp(datas.get(tempPosition).getNewUrl(), "GBK");
+                                myHttp.startCon();
+                                parseContentDom = new ParseContentDom(myHttp.getResult());
+
+                                message.obj = parseContentDom;
+                                message.arg1 = tempPosition;
+                            }else{
+                                myHttp = new MyHttp(datas.get(tempPosition).getNewUrl(), "UTF-8");
+                                myHttp.startCon();
+                                parseSpecialContentDom = new ParseSpecialContentDom(myHttp.getResult());
+                                message.obj = parseSpecialContentDom;
+                                message.arg1 = tempPosition;
+                            }
                             handler.sendMessage(message);
                         }
                     }).start();
@@ -346,14 +443,16 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     }
 
 
-    //模拟添加数据
+    //加载更多
     private void loadData(){
         int count = newsAdapter.getCount();
+        int pageNum;
         Log.v("count",String.valueOf(count));
-        //下一页页码，每页21
-        int pageNum = (count / 21) + 1;
-        Log.v("pageNum", String.valueOf(pageNum));
-        myHttp = new MyHttp("http://news.yzu.edu.cn/list.asp?TypeID="+getTypeId()+"&Page="+pageNum,"GBK");
+        //下一页页码，每页21or60
+        if(getTypeId() < 100){
+            pageNum = (count / 21) + 1;
+            Log.v("pageNum", String.valueOf(pageNum));
+            myHttp = new MyHttp("http://news.yzu.edu.cn/list.asp?TypeID="+getTypeId()+"&Page="+pageNum,"GBK");
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -371,6 +470,29 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     }
                 }
             }).start();
+        }else{
+            pageNum = (count / 60);
+            myHttp = new MyHttp("http://www.yzu.edu.cn/module/jslib/jquery/jpage/dataproxy.jsp?startrecord="+pageNum*60+"&endrecord="+(pageNum+1)*60+"&perpage=20","UTF-8");
+            myHttp.setPostVal("col=1&appid=1&webid=100&path=%2F&columnid=" + getTypeId() + "&sourceContentType=1&unitid=55987&webname=%E6%89%AC%E5%B7%9E%E5%A4%A7%E5%AD%A6&permissiontype=0");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.v("new Thread","new Thread");
+                    if(null != MyHttp.getActiveNetwork(getActivity())){
+                        myHttp.startSpecialCon();
+                        Message message = new Message();
+                        message.what = ADD_LIST;
+                        message.obj = myHttp.getResult();
+                        handler.sendMessage(message);
+                    }else {
+                        Message message = new Message();
+                        message.what = SHOW_ERROR_NETWORK;
+                        handler.sendMessage(message);
+                    }
+                }
+            }).start();
+        }
+
     }
 
     private String getDate(){

@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.liuliugeek.sanc.news.Model.DrawerListData;
+import com.liuliugeek.sanc.news.R;
 
 import java.util.List;
 

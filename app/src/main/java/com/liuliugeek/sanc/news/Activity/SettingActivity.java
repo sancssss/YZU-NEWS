@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.liuliugeek.sanc.news.R;
 
 import java.io.File;
 

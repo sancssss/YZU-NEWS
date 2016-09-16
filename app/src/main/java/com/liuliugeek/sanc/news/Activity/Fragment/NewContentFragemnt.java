@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Activity.Fragment;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -22,6 +22,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.liuliugeek.sanc.news.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -113,15 +115,14 @@ public class NewContentFragemnt extends Fragment {
             public Drawable getDrawable(String source) {
                 Drawable drawable = null;
                 picName = source.substring(11);
+                Log.v("source", source);
                 Log.v("picName", picName);
             //Log.v("sourceName",source);
                 //Log.v("path", String.valueOf(Environment.getExternalStorageDirectory())+"/yzunew_pic/"+source.substring(11));
                 File file = new File(String.valueOf(Environment.getExternalStorageDirectory()) + "/yzunew_pic/", source.substring(11));
                 //file.mkdir();
-                if (source.startsWith("uploadfile")) {
-                    //Log.v("file_startwith","file_startwith");
+                     Log.v("file.getAbsolutePath()", file.getAbsolutePath());
                     if (file.exists()) {
-                        Log.v("file.getAbsolutePath()", file.getAbsolutePath());
                         drawable = Drawable.createFromPath(file.getAbsolutePath());
                         //2k 1080p屏幕适配
                         if(screenHeight > 1600 && screenWidth > 900){
@@ -136,8 +137,16 @@ public class NewContentFragemnt extends Fragment {
                             message.what = SHOW_ERROR_NETWORK;
                             handler.sendMessage(message);
                         }else{
-                            fixedThreadPool = Executors.newFixedThreadPool(3);
-                            fixedThreadPool.execute(new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source));
+                            fixedThreadPool = Executors.newFixedThreadPool(8);
+                            //http://www.yzu.edu.cn/picture/0/1609101755022806394.jpg,http://news.yzu.edu.cn/uploadfile/20160905100808136.jpg
+                            String imgUrl = null;
+                            Log.v("content_arc_typeid", String.valueOf(getArguments().getInt("typeid")));
+                            if(getArguments().getInt("typeid") < 100){
+                                imgUrl = "http://news.yzu.edu.cn/uploadfile/" + picName;
+                            }else{
+                                imgUrl = "http://www.yzu.edu.cn/picture/0/"+picName;
+                            }
+                            fixedThreadPool.execute(new AsyncLoadNetWorkPic(imgUrl));
                             //AsyncLoadNetWorkPic netWorkPic = new AsyncLoadNetWorkPic("http://news.yzu.edu.cn/" + source);
                             //Thread loadpic = new Thread(netWorkPic);
                             //loadpic.start();
@@ -149,7 +158,6 @@ public class NewContentFragemnt extends Fragment {
                            // }
                         }
                     }
-                }
                 return drawable;
         }
     }
@@ -170,7 +178,7 @@ public class NewContentFragemnt extends Fragment {
                 // public void run() {
                      THREAD_COUNT++;
                      String path = AsyncLoadNetWorkPic.this.url;
-                     File file = new File(String.valueOf(Environment.getExternalStorageDirectory())+"/yzunew_pic/",url.substring(34));
+                     File file = new File(String.valueOf(Environment.getExternalStorageDirectory())+"/yzunew_pic/",picName);
                      InputStream in = null;
                      FileOutputStream out = null;
                      try{

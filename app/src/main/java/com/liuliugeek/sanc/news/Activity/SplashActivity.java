@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,12 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
+import com.liuliugeek.sanc.news.Model.Data;
+import com.liuliugeek.sanc.news.MyHttp.MyHttp;
+import com.liuliugeek.sanc.news.Parse.ParseListDom;
+import com.liuliugeek.sanc.news.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

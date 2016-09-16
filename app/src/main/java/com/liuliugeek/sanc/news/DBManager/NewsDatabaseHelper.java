@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.DBManager;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -45,13 +45,23 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
                 new String[] { "10","缤纷扬大" });
         db.execSQL("alter table board add date text");
         db.execSQL("alter table board add is_refresh integer default 0");
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37746","新闻中心" });
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37748","学术活动" });
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37745","图片新闻" });
         Log.v("sql_create", "sql create");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("alter table board add date text");
-        db.execSQL("alter table board add is_refresh integer default 0");
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37746","新闻中心" });
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37748","学术活动" });
+        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
+                new String[] { "37745","图片新闻" });
         Log.v("sql_upgrade", "sql upgrade");
     }
 }

@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Model;
 
 /**
  * Created by 73732 on 2016/8/19.

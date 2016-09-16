@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Activity;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -22,6 +22,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
+import com.liuliugeek.sanc.news.Model.Data;
+import com.liuliugeek.sanc.news.Adapter.DrawerListAdapter;
+import com.liuliugeek.sanc.news.Model.DrawerListData;
+import com.liuliugeek.sanc.news.MyHttp.MyHttp;
+import com.liuliugeek.sanc.news.Activity.Fragment.NewsListFragment;
+import com.liuliugeek.sanc.news.Parse.ParseListDom;
+import com.liuliugeek.sanc.news.R;
 
 import java.util.ArrayList;
 
@@ -150,6 +159,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                 break;
             case 5:
                 sendMsgToUpdate(10,5);
+                break;
+            case 6:
+                sendMsgToUpdate(37746,6);
+                break;
+            case 7:
+                sendMsgToUpdate(37748,7);
+                break;
+            case 8:
+                sendMsgToUpdate(37745,8);
+                break;
         }
         mDrawerLayout.closeDrawer(mDrawerList);
     }
@@ -296,7 +315,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         drawerListDatas.add(new DrawerListData("校报传真",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
         drawerListDatas.add(new DrawerListData("暖情校园",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
         drawerListDatas.add(new DrawerListData("缤纷扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-
+        drawerListDatas.add(new DrawerListData("新闻中心",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("学术活动",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("图片新闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
     }
 
 }

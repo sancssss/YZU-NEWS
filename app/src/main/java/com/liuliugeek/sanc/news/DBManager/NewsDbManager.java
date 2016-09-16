@@ -1,10 +1,12 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.DBManager;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.liuliugeek.sanc.news.Model.Data;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class NewsDbManager {
     private SQLiteDatabase db;
 
     public NewsDbManager(Context context){
-        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 2);
+        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 3);
         db = dbHelper.getWritableDatabase();
     }
 

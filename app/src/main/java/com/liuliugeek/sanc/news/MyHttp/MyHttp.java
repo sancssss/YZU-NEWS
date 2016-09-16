@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.MyHttp;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -23,7 +23,7 @@ public class MyHttp {
     private String result;
     private String postVal;
 
-    MyHttp(String url, String unicode){
+    public MyHttp(String url, String unicode){
         this.url = url;
         this.unicode = unicode;
     }
@@ -70,7 +70,7 @@ public class MyHttp {
             conn.setRequestProperty("Connection", "keep-alive");
             conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
             conn.setRequestProperty("Accept", "text/xml;charset=UTF-8");
-            conn.connect();
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             out.write(this.postVal);
             out.flush();
@@ -82,6 +82,8 @@ public class MyHttp {
                 response.append(line);
             }
             this.result = response.toString();
+            this.result = this.result.replace("<![CDATA[", "");
+            this.result = this.result.replace("]]>","");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ProtocolException e) {

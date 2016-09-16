@@ -1,5 +1,7 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Parse;
 
+
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,26 +14,29 @@ import java.util.List;
 /**
  * Created by 73732 on 2016/8/24.
  */
-public class ParseListDom {
+public class ParseSpecialListDom {
     private String htmldata;
     private List<String> titleList = new ArrayList<>();
     private List<String> timeList = new ArrayList<>();
     private List<String> urlList = new ArrayList<>();
 
-    ParseListDom(String htmldata){
+    public ParseSpecialListDom(String htmldata){
         this.htmldata = htmldata;
     }
 
     public List<String> getTitleList(){
         Document document = Jsoup.parse(this.htmldata);
-        Elements content = document.select("[class=blacklist listPage]");
-        //Log.v("coo", String.valueOf(content.isEmpty()));
-        Elements titles = content.first().getElementsByAttribute("title");
-        //Log.v("coo", titles.html());
+        Element content = document.select("recordset").first();
+       // Log.v("coo", String.valueOf(content.html()));
+        //Element t = content.select("record").first();
+        Elements titles = content.getElementsByTag("a");
+       // Log.v("titles_html", titles.html());
+        Log.v("countParese", String.valueOf(titles.size()));
         for (Element title : titles){
-            // Log.v("coo", title.text());
+             //Log.v("every_title", title.text());
             String titleText = "";
-            titleText = title.text();
+            titleText = title.attr("title");
+            //Log.v("finally_title",  titleText);
             this.titleList.add(titleText);
         }
         return titleList;
@@ -39,10 +44,10 @@ public class ParseListDom {
 
     public List<String> getTimeList(){
         Document document = Jsoup.parse(this.htmldata);
-        Elements content = document.select("[class=blacklist listPage]");
-       // Log.v("coc",content.html());
-        Elements times = content.first().getElementsByClass("newstime");
-        //Log.v("coc",times.html());
+        Element content = document.select("recordset").first();
+        // Log.v("coc",content.html());
+        Elements times = content.getElementsByTag("span");
+        // Log.v("coc",times.html());
         for (Element time :times){
             String timeText = "";
             timeText = time.text();
@@ -53,16 +58,15 @@ public class ParseListDom {
 
     public List<String> getUrlList(){
         Document document = Jsoup.parse(this.htmldata);
-        Elements content = document.select("[class=blacklist listPage]");
-       // Log.v("content",content.html());
-        Elements ids = content.first().getElementsByTag("a");
-        //Log.v("ids_html",ids.html());
+        Element content = document.select("recordset").first();
+      //  Log.v("coo", String.valueOf(content.isEmpty()));
+        Elements ids = content.select("a");
         for (Element id : ids){
             //Log.v("href", ids.attr("href"));
             String urlText = "";
             urlText = id.attr("href");
-            urlText = "http://news.yzu.edu.cn/".concat(urlText);
-            //Log.v("url_text",urlText);
+            urlText = "http://www.yzu.edu.cn".concat(urlText);
+           // Log.v("url_text",urlText);
             this.urlList.add(urlText);
         }
         return urlList;

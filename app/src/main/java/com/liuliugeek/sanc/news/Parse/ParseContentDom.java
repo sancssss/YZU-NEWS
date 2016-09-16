@@ -1,4 +1,4 @@
-package com.liuliugeek.sanc.news;
+package com.liuliugeek.sanc.news.Parse;
 
 import android.util.Log;
 
@@ -14,7 +14,7 @@ public class ParseContentDom {
     private String title;
     private String content;
 
-    ParseContentDom(String htmldata){
+    public ParseContentDom(String htmldata){
         this.htmldata = htmldata;
     }
     ParseContentDom(){}
@@ -22,12 +22,7 @@ public class ParseContentDom {
     public void setHtmldata(String htmldata){
         this.htmldata = htmldata;
     }
-    public String getTitle(){
-        Document document = Jsoup.parse(this.htmldata);
-        Elements titles = document.select("[class=title]");
-        title = titles.first().text();
-        return title;
-    }
+
 
     public String getContent(){
         Document document = Jsoup.parse(this.htmldata.replaceAll("&amp;", "&"));
