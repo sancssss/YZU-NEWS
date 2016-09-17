@@ -80,7 +80,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 case SHOW_CONTENT:
                     int position = msg.arg1;
                     NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
-                    android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                     Bundle bd = new Bundle();
                     dbManager = new NewsDbManager(getActivity());
                     if(getTypeId() < 100){
@@ -99,8 +99,8 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     dbManager.closeDB();
                    // Log.v("update_news",parseContentDom.getContent());
                     newContentFragemnt.setArguments(bd);
-                    //getActivity().getActionBar().setTitle(datas.get(position).getNewTitle());
-                    // fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit);
+                   // getActivity().getActionBar().setTitle(datas.get(position).getNewTitle());
+                    //fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit);
                     fragmentTransaction.replace(R.id.fl_content, newContentFragemnt);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
@@ -298,7 +298,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     public void refreshListData(){
         dbManager = new NewsDbManager(getActivity());
-        fragmentManager = getFragmentManager();
+        //fragmentManager = getFragmentManager();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -323,7 +323,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     public void refreshSpecialListData(){
         dbManager = new NewsDbManager(getActivity());
-        fragmentManager = getFragmentManager();
+        //fragmentManager = getFragmentManager();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -361,7 +361,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 //Log.v("is_content_empty","now is local datas");
                 //int position = msg.arg1;
                 NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
-                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 String content = dbManager.getContent(arcid);
 
                 Bundle bd = new Bundle();
@@ -375,7 +375,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 //newsTitle.setText(dbManager.getTitle(arcid));
                 //getActivity().getActionBar().setTitle(dbManager.getTitle(arcid));
                 dbManager.closeDB();
-                // fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit);
                 fragmentTransaction.replace(R.id.fl_content, newContentFragemnt);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();

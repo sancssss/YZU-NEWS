@@ -1,6 +1,5 @@
 package com.liuliugeek.sanc.news.Activity;
 
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -8,7 +7,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.PagerTabStrip;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.support.design.widget.TabLayout;
 import android.widget.Toast;
 
 import com.liuliugeek.sanc.news.Activity.Fragment.NewsListFragment;
@@ -66,7 +67,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public int nowtitleid;
 
     private ViewPager pager;
-    private PagerTabStrip tabStrip;
+    private TabLayout tabLayout;
+    private PagerAdapter pagerAdapter;
 
 
     private ArrayList<DrawerListData> drawerListDatas;
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
                     newsListFragment.setTypeID(msg.arg2);
                     android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fl_content, newsListFragment);
+                    //fragmentTransaction.replace(R.id.fl_content, newsListFragment);
                     fragmentTransaction.commit();
                     break;
                 case SHOW_ERROR_NETWORK:
@@ -187,12 +189,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             //newsTitle.setText(mPlanetTitles[titleid]);
             getSupportActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
             ArrayList<Data> datas = new ArrayList<Data>();
+            Log.v("typeid", String.valueOf(typeid));
             datas = dbManager.query(typeid);
             NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
             //扬大要闻typeid
             newsListFragment.setTypeID(typeid);
             android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fl_content, newsListFragment);
+          //fragmentTransaction.replace(R.id.fl_content, newsListFragment);
             fragmentTransaction.commit();
         }else {
             Log.v("is_from_network", "now datas is from network");
@@ -205,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             newsListFragment.setTypeID(typeid);
             android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fl_content, newsListFragment);
-            fragmentTransaction.commit();
+           // fragmentTransaction.commit();
         }
     }
 
@@ -263,7 +266,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.left_drawer);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        tabLayout = (TabLayout) findViewById(R.id.tab_FindFragment_title);
+        pager = (ViewPager) findViewById(R.id.vp_FindFragment_pager);
         //openMenuBtn = (Button) findViewById(R.id.my_actionbar_left);
         //refreshBtn = (Button) findViewById(R.id.my_actionbar_right);
         //pager = (ViewPager) findViewById(R.id.viewpager);
@@ -282,7 +286,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        for(int i = 0; i < drawerListDatas.size(); i++){
+            tabLayout.addTab(tabLayout.newTab().setText(drawerListDatas.get(i).getItemName()));
+        }
+        tabLayout.setTabGravity(TabLayout.MODE_SCROLLABLE);
+        pagerAdapter = new com.liuliugeek.sanc.news.Adapter.PagerAdapter(getSupportFragmentManager(), drawerListDatas, MainActivity.this);
+        pager.setAdapter(pagerAdapter);
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name){
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -295,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         };
         fragmentManager = getSupportFragmentManager();
-        sendMsgToUpdate(3, 0);
+       // sendMsgToUpdate(3, 0);
     }
 
 
@@ -320,19 +330,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         */
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerList.setOnItemClickListener(this);
+        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                pager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
     }
 
     public void initDrawerList(){
-        drawerListDatas.add(new DrawerListData("扬大要闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("媒体扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("综合报道",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("校报传真",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("暖情校园",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("缤纷扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("新闻中心",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("学术活动",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
-        drawerListDatas.add(new DrawerListData("图片新闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,1));
+        drawerListDatas.add(new DrawerListData("扬大要闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,3));
+        drawerListDatas.add(new DrawerListData("媒体扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,4));
+        drawerListDatas.add(new DrawerListData("综合报道",R.drawable.abc_scrubber_control_off_mtrl_alpha,5));
+        drawerListDatas.add(new DrawerListData("校报传真",R.drawable.abc_scrubber_control_off_mtrl_alpha,8));
+        drawerListDatas.add(new DrawerListData("暖情校园",R.drawable.abc_scrubber_control_off_mtrl_alpha,9));
+        drawerListDatas.add(new DrawerListData("缤纷扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,10));
+        drawerListDatas.add(new DrawerListData("新闻中心",R.drawable.abc_scrubber_control_off_mtrl_alpha,37746));
+        drawerListDatas.add(new DrawerListData("学术活动",R.drawable.abc_scrubber_control_off_mtrl_alpha,37748));
+        drawerListDatas.add(new DrawerListData("图片新闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,37745));
     }
 
 }
