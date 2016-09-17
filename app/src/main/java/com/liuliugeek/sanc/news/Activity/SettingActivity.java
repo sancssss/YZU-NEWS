@@ -1,8 +1,8 @@
 package com.liuliugeek.sanc.news.Activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,14 +13,13 @@ import com.liuliugeek.sanc.news.R;
 
 import java.io.File;
 
-public class SettingActivity extends Activity {
+public class SettingActivity extends AppCompatActivity {
     private Button claerImgButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        getActionBar().hide();
         claerImgButton = (Button)findViewById(R.id.clear_img);
         claerImgButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,13 +1,12 @@
 package com.liuliugeek.sanc.news.Activity.Fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +17,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liuliugeek.sanc.news.Adapter.NewsAdapter;
 import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
 import com.liuliugeek.sanc.news.Model.Data;
 import com.liuliugeek.sanc.news.MyHttp.MyHttp;
-import com.liuliugeek.sanc.news.Adapter.NewsAdapter;
 import com.liuliugeek.sanc.news.Parse.ParseContentDom;
 import com.liuliugeek.sanc.news.Parse.ParseListDom;
 import com.liuliugeek.sanc.news.Parse.ParseSpecialContentDom;
@@ -81,7 +80,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 case SHOW_CONTENT:
                     int position = msg.arg1;
                     NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     Bundle bd = new Bundle();
                     dbManager = new NewsDbManager(getActivity());
                     if(getTypeId() < 100){
@@ -207,6 +206,9 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         this.fragmentManager = fragmentManager;
     }
 
+    public NewsListFragment(){
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -359,7 +361,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 //Log.v("is_content_empty","now is local datas");
                 //int position = msg.arg1;
                 NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 String content = dbManager.getContent(arcid);
 
                 Bundle bd = new Bundle();
@@ -507,5 +509,13 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     public int getTypeId(){
         return typeid;
+    }
+
+    public void setDatas(ArrayList<Data> datas){
+        this.datas = datas;
+    }
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 }

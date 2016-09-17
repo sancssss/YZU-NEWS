@@ -1,6 +1,6 @@
 package com.liuliugeek.sanc.news.Activity.Fragment;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
@@ -94,7 +95,7 @@ public class NewContentFragemnt extends Fragment {
         // handler.sendMessage(message);
         // Spanned spanned = (Spanned) msg.obj;
         //Log.v("spannd", (String) msg.obj);
-        getActivity().getActionBar().hide();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         String content = getArguments().getString("content");
         newsContent.setText(Html.fromHtml(content, imageGetter, null));

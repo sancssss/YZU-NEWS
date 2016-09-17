@@ -1,11 +1,10 @@
 package com.liuliugeek.sanc.news.Activity;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +12,8 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,19 +24,19 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.liuliugeek.sanc.news.Activity.Fragment.NewsListFragment;
+import com.liuliugeek.sanc.news.Adapter.DrawerListAdapter;
 import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
 import com.liuliugeek.sanc.news.Model.Data;
-import com.liuliugeek.sanc.news.Adapter.DrawerListAdapter;
 import com.liuliugeek.sanc.news.Model.DrawerListData;
 import com.liuliugeek.sanc.news.MyHttp.MyHttp;
-import com.liuliugeek.sanc.news.Activity.Fragment.NewsListFragment;
 import com.liuliugeek.sanc.news.Parse.ParseListDom;
 import com.liuliugeek.sanc.news.R;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends Activity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     private static final int SHOW_LIST = 0;
     private static final int SHOW_ERROR_NETWORK = 1;
@@ -45,6 +46,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Toolbar toolbar;
+    private AnimationDrawable animationDrawable;
 
     private Button openMenuBtn;
     private Button refreshBtn;
@@ -93,11 +96,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                     }
                     //将数据存进本地数据库
                     dbManager.add(datas);
-                    getActionBar().setTitle(drawerListDatas.get(msg.arg1).getItemName());
+                    getSupportActionBar().setTitle(drawerListDatas.get(msg.arg1).getItemName());
                     //newsTitle.setText(mPlanetTitles[msg.arg1]);
                     NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
                     newsListFragment.setTypeID(msg.arg2);
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.fl_content, newsListFragment);
                     fragmentTransaction.commit();
                     break;
@@ -129,7 +132,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             }
         }else{
             fragmentManager.popBackStack();
-            getActionBar().show();
+            getSupportActionBar().show();
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             // newsTitle.setText(mPlanetTitles[nowtitleid]);
            // openMenuBtn.setVisibility(View.VISIBLE);
@@ -182,25 +185,25 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             Log.v("is_from_db", "now datas is from db");
             //设置标题：扬大要闻
             //newsTitle.setText(mPlanetTitles[titleid]);
-            getActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
+            getSupportActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
             ArrayList<Data> datas = new ArrayList<Data>();
             datas = dbManager.query(typeid);
             NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
             //扬大要闻typeid
             newsListFragment.setTypeID(typeid);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fl_content, newsListFragment);
             fragmentTransaction.commit();
         }else {
             Log.v("is_from_network", "now datas is from network");
             //设置标题：扬大要闻
             //newsTitle.setText(mPlanetTitles[titleid]);
-            getActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
+            getSupportActionBar().setTitle(drawerListDatas.get(titleid).getItemName());
             ArrayList<Data> datas = new ArrayList();
             NewsListFragment newsListFragment = new NewsListFragment(fragmentManager, datas);
             //扬大要闻typeid
             newsListFragment.setTypeID(typeid);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fl_content, newsListFragment);
             fragmentTransaction.commit();
         }
@@ -229,13 +232,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
-                if(mDrawerLayout.isDrawerOpen(mDrawerList)){
-                    Log.v("actionbar_icon","actionbar_icon");
-                    mDrawerLayout.closeDrawer(mDrawerList);
-                }else{
-                    Log.v("actionbar_icon","actionbar_icon");
-                    mDrawerLayout.openDrawer(mDrawerList);
-                }
+
                 return true;
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingActivity.class);
@@ -265,6 +262,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mDrawerList = (ListView)findViewById(R.id.left_drawer);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         //openMenuBtn = (Button) findViewById(R.id.my_actionbar_left);
         //refreshBtn = (Button) findViewById(R.id.my_actionbar_right);
@@ -272,18 +270,35 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         //tabStrip = (PagerTabStrip) findViewById(R.id.pagertitle);
     }
 
+
     private void init(){
         //启动db manage
         dbManager = new NewsDbManager(this);
         drawerListDatas = new ArrayList<>();
         initDrawerList();
         mContext = MainActivity.this;
-        mDrawerList.setAdapter(new DrawerListAdapter(drawerListDatas,mContext));
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name);
-        fragmentManager = getFragmentManager();
+        mDrawerList.setAdapter(new DrawerListAdapter(drawerListDatas, mContext));
+        toolbar.setTitle("Yzu news");
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        setSupportActionBar(toolbar);
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        fragmentManager = getSupportFragmentManager();
         sendMsgToUpdate(3, 0);
     }
+
+
 
     private void setOnC(){
        /* openMenuBtn.setOnClickListener(new View.OnClickListener() {
