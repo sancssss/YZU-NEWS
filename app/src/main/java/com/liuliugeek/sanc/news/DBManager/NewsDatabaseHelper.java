@@ -31,6 +31,8 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BOARD);
         db.execSQL(CREATE_NEWS);
+        db.execSQL("alter table board add date text");
+        db.execSQL("alter table board add is_refresh integer default 0");
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "3","扬大要闻" });
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
@@ -43,8 +45,6 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
                 new String[] { "9","暖情校园" });
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "10","缤纷扬大" });
-        db.execSQL("alter table board add date text");
-        db.execSQL("alter table board add is_refresh integer default 0");
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "37746","新闻中心" });
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
@@ -56,12 +56,7 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
-                new String[] { "37746","新闻中心" });
-        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
-                new String[] { "37748","学术活动" });
-        db.execSQL("insert into board (board_id, board_name) values(?, ?)",
-                new String[] { "37745","图片新闻" });
+
         Log.v("sql_upgrade", "sql upgrade");
     }
 }

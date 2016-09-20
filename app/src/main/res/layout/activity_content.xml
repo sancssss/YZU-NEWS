@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp">
+    <include
+        layout="@layout/toolbar_navi" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingTop="0dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/news_content_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/abc_text_size_headline_material"
+                android:text="title"
+                android:gravity="left"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/news_content_date"
+                android:textSize="@dimen/abc_text_size_subtitle_material_toolbar"
+                android:text="2016-1-1"
+                android:gravity="left"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:textColor="#000"
+                android:textSize="20sp"
+                android:id="@+id/news_content"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

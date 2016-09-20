@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:background="#1976D2"
+    android:layout_height="match_parent" android:background="@color/color_primaryDark"
     tools:context="com.liuliugeek.sanc.news.Activity.SplashActivity"
     android:orientation="vertical"
     >
@@ -11,7 +11,7 @@
         android:gravity="center"
         android:layout_weight="6"
         android:src="@drawable/logo"
-        android:background="#1976D2"
+        android:background="@color/color_primaryDark"
         android:textSize="30sp"/>
     <TextView
         android:layout_width="match_parent"
@@ -19,8 +19,8 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="扬大新闻 V1.1"
-        android:textColor="@color/material_grey_100"
-        android:background="#2196F3"
+        android:text="扬大新闻 V2.0"
+        android:textColor="@color/white"
+        android:background="@color/color_primary"
         android:textSize="14sp"/>
 </LinearLayout>

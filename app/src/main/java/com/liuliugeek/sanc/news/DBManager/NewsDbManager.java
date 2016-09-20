@@ -20,7 +20,7 @@ public class NewsDbManager {
     private SQLiteDatabase db;
 
     public NewsDbManager(Context context){
-        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 3);
+        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 4);
         db = dbHelper.getWritableDatabase();
     }
 

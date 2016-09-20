@@ -8,5 +8,9 @@
     <string name="title_activity_about">AboutActivity</string>
     <string name="title_activity_setting">SettingActivity</string>
     <string name="setting_cache">新闻图片缓存</string>
+    <string name="title_activity_content">ContentActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="newsname">新闻中心</string>
 
 </resources>

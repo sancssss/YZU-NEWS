@@ -1,7 +1,10 @@
 package com.liuliugeek.sanc.news.Activity.Fragment;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liuliugeek.sanc.news.Activity.ContentActivity;
 import com.liuliugeek.sanc.news.Adapter.NewsAdapter;
 import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
 import com.liuliugeek.sanc.news.Model.Data;
@@ -72,6 +76,8 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     private Context context;
 
     private NewsDbManager dbManager;
+    private Intent intent;
+
 
     private Handler handler = new Handler(){
         @Override
@@ -82,21 +88,26 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
                     android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                     Bundle bd = new Bundle();
+                    intent = new Intent(getContext(), ContentActivity.class);
                     dbManager = new NewsDbManager(getActivity());
+                    Data tempData = datas.get(position);
                     if(getTypeId() < 100){
                         parseContentDom = (ParseContentDom)msg.obj;
-                        bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+parseContentDom.getContent());
-                        dbManager.updateContent(datas.get(position).getNewArcid(), parseContentDom.getContent());
+                        intent.putExtra("content", parseContentDom.getContent());
+                        dbManager.updateContent(tempData.getNewArcid(), parseContentDom.getContent());
                     }else{
                         parseSpecialContentDom = (ParseSpecialContentDom)msg.obj;
-                        bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+parseSpecialContentDom.getContent());
-                        dbManager.updateContent(datas.get(position).getNewArcid(),parseSpecialContentDom.getContent());
+                        intent.putExtra("content", parseSpecialContentDom.getContent());
+                        dbManager.updateContent(tempData.getNewArcid(),parseSpecialContentDom.getContent());
                     }
-                    bd.putInt("typeid",getTypeId());
-                    bd.putString("url", datas.get(position).getNewUrl());
-                    bd.putString("title",datas.get(position).getNewTitle());
+                    intent.putExtra("typeid", getTypeId());
+                    intent.putExtra("url", tempData.getNewUrl());
+                    intent.putExtra("title", tempData.getNewTitle());
+                    intent.putExtra("date",tempData.getNewDate());
                     //更新本地数据库
                     dbManager.closeDB();
+                    getActivity().startActivity(intent);
+                    /*
                    // Log.v("update_news",parseContentDom.getContent());
                     newContentFragemnt.setArguments(bd);
                    // getActivity().getActionBar().setTitle(datas.get(position).getNewTitle());
@@ -104,6 +115,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     fragmentTransaction.replace(R.id.fl_content, newContentFragemnt);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                    */
                     break;
                 case  ADD_LIST:
                     List<String> tempTitleList = new ArrayList<>();
@@ -210,6 +222,8 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     }
 
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_list, container ,false);
@@ -219,6 +233,9 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         newsList = (ListView) view.findViewById(R.id.list_news);
         newsList.addFooterView(loadMoreView);
         newsList.setOnScrollListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            newsList.setNestedScrollingEnabled(true);
+        }
 
         ptrClassicFrameLayout = (PtrClassicFrameLayout) view.findViewById(R.id.ptr_refresh);
         ptrClassicFrameLayout.setLastUpdateTimeRelateObject(this);
@@ -244,6 +261,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             newsAdapter = new NewsAdapter(datas, getActivity());
             newsList.setAdapter(newsAdapter);
         }
+        dbManager.closeDB();
         ptrClassicFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
@@ -265,20 +283,9 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             }
         });
 
-        /*loadMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadMore(v);
-            }
-        });*/
         newsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //隐藏菜单键
-               // getActivity().findViewById(R.id.my_actionbar_left).setVisibility(View.INVISIBLE);
-               // getActivity().findViewById(R.id.my_actionbar_right).setVisibility(View.INVISIBLE);
-
-                //Log.v("position", String.valueOf(position));
                 sendMsgToGetContent(position);
             }
         });
@@ -298,7 +305,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     public void refreshListData(){
         dbManager = new NewsDbManager(getActivity());
-        //fragmentManager = getFragmentManager();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -364,20 +370,14 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 String content = dbManager.getContent(arcid);
 
-                Bundle bd = new Bundle();
-                bd.putString("content","<h2>"+datas.get(position).getNewTitle() +"</h2><br>"+content);
-                bd.putString("url",datas.get(position).getNewUrl());
-                bd.putString("title",datas.get(position).getNewTitle());
-                bd.putInt("typeid", getTypeId());
-
-                newContentFragemnt.setArguments(bd);
-                TextView newsTitle = (TextView) getActivity().findViewById(R.id.txt_title);
-                //newsTitle.setText(dbManager.getTitle(arcid));
-                //getActivity().getActionBar().setTitle(dbManager.getTitle(arcid));
+                intent = new Intent(getContext(), ContentActivity.class);
+                intent.putExtra("content",  content);
+                intent.putExtra("url", datas.get(position).getNewUrl());
+                intent.putExtra("title", datas.get(position).getNewTitle());
+                intent.putExtra("typeid", getTypeId());;
+                intent.putExtra("date", datas.get(position).getNewDate());
                 dbManager.closeDB();
-                fragmentTransaction.replace(R.id.fl_content, newContentFragemnt);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                startActivity(intent);
         }else{
             if(null != MyHttp.getActiveNetwork(getActivity())){
                 tempPosition = position;
@@ -517,4 +517,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
+
+
 }
