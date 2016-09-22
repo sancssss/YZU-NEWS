@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.liuliugeek.sanc.news.Activity.ContentActivity">
     <item android:id="@+id/action_settings" android:title="分享"
-        android:icon="@drawable/ic_share_black_48dp"
+        android:icon="@drawable/ic_share_white_48dp"
         android:orderInCategory="100" app:showAsAction="always" />
 </menu>

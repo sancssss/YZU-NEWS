@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         drawerListDatas = new ArrayList<>();
         initDrawerList();
         mContext = MainActivity.this;
-        toolbar.setTitle("Yzu news");
+        toolbar.setTitle("扬大新闻");
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
@@ -246,15 +246,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initDrawerList(){
+        drawerListDatas.add(new DrawerListData("新闻中心",R.drawable.abc_scrubber_control_off_mtrl_alpha,37746));
+        drawerListDatas.add(new DrawerListData("学术活动",R.drawable.abc_scrubber_control_off_mtrl_alpha,37748));
+        drawerListDatas.add(new DrawerListData("图片新闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,37745));
         drawerListDatas.add(new DrawerListData("扬大要闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,3));
         drawerListDatas.add(new DrawerListData("媒体扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,4));
         drawerListDatas.add(new DrawerListData("综合报道",R.drawable.abc_scrubber_control_off_mtrl_alpha,5));
         drawerListDatas.add(new DrawerListData("校报传真",R.drawable.abc_scrubber_control_off_mtrl_alpha,8));
         drawerListDatas.add(new DrawerListData("暖情校园",R.drawable.abc_scrubber_control_off_mtrl_alpha,9));
         drawerListDatas.add(new DrawerListData("缤纷扬大",R.drawable.abc_scrubber_control_off_mtrl_alpha,10));
-        drawerListDatas.add(new DrawerListData("新闻中心",R.drawable.abc_scrubber_control_off_mtrl_alpha,37746));
-        drawerListDatas.add(new DrawerListData("学术活动",R.drawable.abc_scrubber_control_off_mtrl_alpha,37748));
-        drawerListDatas.add(new DrawerListData("图片新闻",R.drawable.abc_scrubber_control_off_mtrl_alpha,37745));
     }
 
 }
