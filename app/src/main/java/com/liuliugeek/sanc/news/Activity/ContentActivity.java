@@ -35,9 +35,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ContentActivity extends AppCompatActivity {
-    static int THREAD_COUNT = 0;
+    static Integer THREAD_COUNT = 0;
     private final static int UPDATE_CONTENT = 0;
-    private static final int SHOW_ERROR_NETWORK = 2;
+    private final static int SHOW_ERROR_NETWORK = 2;
     private TextView newsContent,newsTitle,newsDate;
     private Toolbar toolbar;
     private String picName;
@@ -48,6 +48,7 @@ public class ContentActivity extends AppCompatActivity {
     private Bundle bundle;
     private Intent intent;
     private String content;
+    private AsyncLoadNetWorkPic netWorkPic;
 
     private Handler handler = new Handler() {
         @Override
@@ -57,6 +58,7 @@ public class ContentActivity extends AppCompatActivity {
                     Log.v("Handler", "handler");
                     Log.v("poolThreadcount", String.valueOf(THREAD_COUNT));
                     if (THREAD_COUNT == 0) {
+                        Log.v("refreshView","now refreshView");
                         newsContent.setText(Html.fromHtml(content, imageGetter, null));
                     }
                     break;
@@ -89,6 +91,7 @@ public class ContentActivity extends AppCompatActivity {
             screenHeight = display.getHeight();
             Log.v("size", String.valueOf(screenHeight) + "+" + screenWidth);
             content = bundle.getString("content");
+            netWorkPic = new AsyncLoadNetWorkPic();
             imageGetter = new NetWorkImageGetter();
             newsTitle.setText(bundle.getString("title"));
             newsDate.setText("时间：" + bundle.getString("date"));
@@ -157,16 +160,17 @@ public class ContentActivity extends AppCompatActivity {
                     }else{
                         imgUrl = "http://www.yzu.edu.cn/picture/0/"+picName;
                     }
-                    //fixedThreadPool.execute(new AsyncLoadNetWorkPic(imgUrl));
-                    AsyncLoadNetWorkPic netWorkPic = new AsyncLoadNetWorkPic(imgUrl);
+                    netWorkPic.setUrl(imgUrl);
+                    fixedThreadPool.execute(netWorkPic);
+                   /* netWorkPic.setUrl(imgUrl);
                     Thread loadpic = new Thread(netWorkPic);
                     loadpic.start();
                     // Log.v("activeCountPool", String.valueOf( String.valueOf(((ThreadPoolExecutor) fixedThreadPool).getActiveCount())));
-                    //try {
-                    // loadpic.join();
-                    // } catch (InterruptedException e) {
-                    //    e.printStackTrace();
-                    // }
+                   /* try {
+                    loadpic.join();
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                    }*/
                 }
             }
             return drawable;
@@ -175,21 +179,21 @@ public class ContentActivity extends AppCompatActivity {
     private final class AsyncLoadNetWorkPic implements  Runnable{
         private String url;
 
-        public AsyncLoadNetWorkPic(String... params) {
-            url = params[0];
-            Log.v("param", params[0]);
+        public void setUrl(String... params) {
+            this.url = params[0];
         }
+
         //新线程下载图片保存
         public void run() {
             //
             // Log.v("loadpic thread","load pic thread");
             //再创建一个线程以后台下载
-            new Thread(new Runnable() {
+           /* new Thread(new Runnable() {
                 @Override
-                public void run() {
-                    synchronized (this) {
-                        THREAD_COUNT++;
-                    }
+                public void run() {*/
+            synchronized (THREAD_COUNT) {
+                THREAD_COUNT++;
+            }
                     String path = AsyncLoadNetWorkPic.this.url;
                     File file = new File(String.valueOf(Environment.getExternalStorageDirectory()) + "/yzunew_pic/", picName);
                     InputStream in = null;
@@ -207,9 +211,10 @@ public class ContentActivity extends AppCompatActivity {
                             while ((len = in.read(buffer)) != -1) {
                                 out.write(buffer, 0, len);
                             }
-                            synchronized (this) {
+                            synchronized (THREAD_COUNT){
                                 THREAD_COUNT--;
                             }
+
 
                             Message message = new Message();
                             message.what = UPDATE_CONTENT;
@@ -241,8 +246,8 @@ public class ContentActivity extends AppCompatActivity {
                             }
                         }
                     }
-                }
-            }).start();
+                /*}
+            }).start();*/
         }
     }
 
