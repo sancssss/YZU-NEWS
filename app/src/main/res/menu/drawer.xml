@@ -7,13 +7,19 @@
             android:title="软件设置"
             android:icon="@drawable/ic_settings_black_48dp"/>
         <item
-            android:id="@+id/navigation_item_about"
-            android:title="关于和反馈"
-            android:icon="@drawable/ic_person_black_48dp"/>
+            android:id="@+id/navigation_item_favorite"
+            android:title="我的收藏"
+            android:icon="@drawable/ic_favorite_black_48dp"/>
 
         <item
             android:id="@+id/navigation_item_theme"
             android:title="切换主题"
             android:icon="@drawable/ic_filter_list_black_48dp"/>
+
+        <item
+            android:id="@+id/navigation_item_about"
+            android:title="关于和反馈"
+            android:icon="@drawable/ic_person_black_48dp"/>
+
     </group>
 </menu>

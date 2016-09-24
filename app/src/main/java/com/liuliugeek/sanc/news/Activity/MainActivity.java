@@ -236,6 +236,10 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent1 = new Intent(MainActivity.this, AboutActivity.class);
                         startActivity(intent1);
                         break;
+                    case R.id.navigation_item_favorite:
+                        Intent intent2 = new Intent(MainActivity.this, FavoritesActivity.class);
+                        startActivity(intent2);
+                        break;
                     default:
                         Log.v("navigationView","ni click navi");
                 }

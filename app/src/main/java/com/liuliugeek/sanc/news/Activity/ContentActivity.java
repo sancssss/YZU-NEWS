@@ -49,6 +49,9 @@ public class ContentActivity extends AppCompatActivity {
     private Bundle bundle;
     private Intent intent;
     private String content;
+    private MenuItem menuItem = null;
+    private int isFavorite;
+    private int arcid;
 
     private Handler handler = new Handler() {
         @Override
@@ -82,6 +85,8 @@ public class ContentActivity extends AppCompatActivity {
         screenWidth = display.getWidth();
         screenHeight = display.getHeight();
         Log.v("size", String.valueOf(screenHeight) + "+" + screenWidth);
+        isFavorite = bundle.getInt("favorite");
+        arcid = bundle.getInt("arcid");
         content = bundle.getString("content");
         newsTitle.setText(bundle.getString("title"));
         newsDate.setText("时间：" + bundle.getString("date"));
@@ -101,8 +106,8 @@ public class ContentActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_content, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_favorite);
-        if(bundle.getInt("favorite") == 1){
+        menuItem = menu.findItem(R.id.action_favorite);
+        if(isFavorite== 1){
             menuItem.setTitle("取消收藏");
         }
         return true;
@@ -124,11 +129,12 @@ public class ContentActivity extends AppCompatActivity {
         if(id == R.id.action_favorite){
             NewsDbManager dbManager = new NewsDbManager(ContentActivity.this);
             //取消收藏
-            if(bundle.getInt("favorite") == 1){
-                dbManager.removeFavorite( bundle.getInt("arcid"));
-                item.setTitle("收藏");
+            if(isFavorite == 1){
+                dbManager.removeFavorite(arcid);
+                menuItem.setTitle("收藏");
+                isFavorite = 0;
+                Log.v("when delete fdata", String.valueOf(isFavorite));
                 //刷新菜单
-                invalidateOptionsMenu();
             }else{
                 Data data = new Data();
                 data.setNewArcid(bundle.getInt("arcid"));
@@ -138,15 +144,15 @@ public class ContentActivity extends AppCompatActivity {
                 data.setNewUrl(bundle.getString("url"));
                 data.setNewDate(bundle.getString("date"));
                 dbManager.addToFavorites(data);
-                item.setTitle("取消收藏");
+                isFavorite = 1;
+                menuItem.setTitle("取消收藏");
+                Log.v("when create fdata", String.valueOf(isFavorite));
                 //刷新菜单
-                invalidateOptionsMenu();
             }
+            dbManager.closeDB();
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 
 
     public static void shareMsg(Context context, String activityTitle, String msgTitle, String msgText,

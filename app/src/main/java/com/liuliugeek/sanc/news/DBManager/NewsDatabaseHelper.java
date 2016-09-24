@@ -17,13 +17,13 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
             + "news_url text, "
             + "news_date text, "
             + "news_title text, "
-            + "news_content text"
+            + "news_content text, "
             + "news_isfavorite integer default 0)";
 
     public static final String CREATE_BOARD = "create table board("
             + "board_id integer primary key, "
-            + "board_name text"
-            + "is_refresh integer default 0) ";
+            + "board_name text, "
+            + "date text) ";
     public static final String CREATE_SETTING = "create table setting("
             + "setting_id integer primary key, "
             + "setting_diaplay_pic integer, "
@@ -31,7 +31,7 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_FAVORITE = "create table favorite("
             + "news_id integer primary key autoincrement, "
             + "news_typeid integer, "
-            + "news_arcid integer REFERENCES board(board_id), "
+            + "news_arcid integer , "
             + "news_url text, "
             + "news_date text, "
             + "news_title text, "

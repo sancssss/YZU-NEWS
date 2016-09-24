@@ -29,7 +29,7 @@ public class NewsDbManager {
         db.beginTransaction();
         try{
             for(Data data : datas){
-                db.execSQL("INSERT INTO news VALUES(null, ?, ?, ?, ?, ?, ?, ?)", new Object[]{data.getNewTypeid(),data.getNewArcid(),data.getNewUrl(),data.getNewDate(),data.getNewTitle(),data.getNewContent()});
+                db.execSQL("INSERT INTO news VALUES(null, ?, ?, ?, ?, ?, ?, null)", new Object[]{data.getNewTypeid(),data.getNewArcid(),data.getNewUrl(),data.getNewDate(),data.getNewTitle(),data.getNewContent()});
             }
             db.setTransactionSuccessful();
         }finally {
@@ -94,7 +94,7 @@ public class NewsDbManager {
             //要修改的内容
             val.put("news_isfavorite", 1);
             //数组内是条件
-            db.update("news", val, "news_arcid = ?", new String[]{String.valueOf(data.getNewTypeid())});
+            db.update("news", val, "news_arcid = ?", new String[]{String.valueOf(data.getNewArcid())});
             db.setTransactionSuccessful();
         }finally {
             db.endTransaction();
@@ -102,7 +102,13 @@ public class NewsDbManager {
     }
 
     public void removeFavorite(int arcid){
-        db.execSQL("delete from favorite where news_arcid = " + arcid);
+        Log.v("remove F arcid", String.valueOf(arcid));
+            db.execSQL("delete from favorite where news_arcid = " + arcid);
+            ContentValues val = new ContentValues();
+        //要修改的内容
+            val.put("news_isfavorite", 0);
+            //数组内是条件
+            db.update("news", val, "news_arcid = ?", new String[]{String.valueOf(arcid)});
     }
 
     //利用arcid更新

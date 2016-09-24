@@ -3,6 +3,7 @@ package com.liuliugeek.sanc.news.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ public class FavoritesActivity extends AppCompatActivity {
     private ArrayList<Data> datas;
     private NewsAdapter newsAdapter;
     private NewsDbManager dbManager;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,10 @@ public class FavoritesActivity extends AppCompatActivity {
         findView();
         dbManager = new NewsDbManager(FavoritesActivity.this);
         datas = dbManager.queryFavorites();
+        toolbar.setTitle("我的收藏");
+        toolbar.setNavigationIcon(R.drawable.ic_favorite_white_48dp);
+        toolbar.setSubtitle("共有 " + datas.size() + "条");
+        setSupportActionBar(toolbar);
         newsAdapter = new NewsAdapter(datas, FavoritesActivity.this);
         listView.setAdapter(newsAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -41,7 +47,7 @@ public class FavoritesActivity extends AppCompatActivity {
                 intent.putExtra("title", datas.get(position).getNewTitle());
                 intent.putExtra("typeid", datas.get(position).getNewTypeid());
                 intent.putExtra("date", datas.get(position).getNewDate());
-                intent.putExtra("favorite", datas.get(position).getIsFavorite());
+                intent.putExtra("favorite", 1);
                 dbManager.closeDB();
                 startActivity(intent);
             }
@@ -49,7 +55,21 @@ public class FavoritesActivity extends AppCompatActivity {
     }
 
     public void findView(){
-        listView = (ListView) findViewById(R.id.list_news);
+        listView = (ListView) findViewById(R.id.favorite_list_news);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        dbManager = new NewsDbManager(FavoritesActivity.this);
+        datas = dbManager.queryFavorites();
+        newsAdapter = new NewsAdapter(datas, FavoritesActivity.this);
+        listView.setAdapter(newsAdapter);
+        newsAdapter.notifyDataSetChanged();
+        toolbar.setSubtitle("共有 " + datas.size() + "条");
+        setSupportActionBar(toolbar);
     }
 
     @Override
