@@ -6,26 +6,30 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.liuliugeek.sanc.news.Activity.AboutActivity"
     android:orientation="vertical"
+    android:gravity="center"
     >
-    <in.srain.cube.views.ptr.PtrClassicFrameLayout
-        android:id="@+id/rotate_header_web_view_frame"
-        xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#f1f1f1"
-        cube_ptr:ptr_duration_to_close="200"
-        cube_ptr:ptr_duration_to_close_header="1000"
-        cube_ptr:ptr_keep_header_when_refresh="true"
-        cube_ptr:ptr_pull_to_fresh="false"
-        cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
-        cube_ptr:ptr_resistance="1.7">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="扬大新闻客户端V1.0"
+        android:text="扬大新闻客户端V2.0"
         android:id="@+id/yzu_name"
+        android:gravity="center"
+        android:padding="20dp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="By Sanc"
+        android:gravity="center"
+        android:padding="20dp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="mail:sancssss@1996gmail.com"
+        android:gravity="center"
+        android:padding="20dp"
         />
 
-    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
 </LinearLayout>
