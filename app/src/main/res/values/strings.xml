@@ -12,5 +12,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="newsname">新闻中心</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
 
 </resources>

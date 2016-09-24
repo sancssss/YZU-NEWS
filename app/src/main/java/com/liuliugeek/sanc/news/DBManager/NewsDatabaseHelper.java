@@ -17,10 +17,25 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
             + "news_url text, "
             + "news_date text, "
             + "news_title text, "
-            + "news_content text)";
+            + "news_content text"
+            + "news_isfavorite integer default 0)";
+
     public static final String CREATE_BOARD = "create table board("
             + "board_id integer primary key, "
-            + "board_name text) ";
+            + "board_name text"
+            + "is_refresh integer default 0) ";
+    public static final String CREATE_SETTING = "create table setting("
+            + "setting_id integer primary key, "
+            + "setting_diaplay_pic integer, "
+            + "setting_theme_id integer) ";
+    public static final String CREATE_FAVORITE = "create table favorite("
+            + "news_id integer primary key autoincrement, "
+            + "news_typeid integer, "
+            + "news_arcid integer REFERENCES board(board_id), "
+            + "news_url text, "
+            + "news_date text, "
+            + "news_title text, "
+            + "news_content text)";
 
 
     public NewsDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -31,8 +46,8 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BOARD);
         db.execSQL(CREATE_NEWS);
-        db.execSQL("alter table board add date text");
-        db.execSQL("alter table board add is_refresh integer default 0");
+        db.execSQL(CREATE_SETTING);
+        db.execSQL(CREATE_FAVORITE);
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "3","扬大要闻" });
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",

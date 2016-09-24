@@ -100,10 +100,12 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                         intent.putExtra("content", parseSpecialContentDom.getContent());
                         dbManager.updateContent(tempData.getNewArcid(),parseSpecialContentDom.getContent());
                     }
+                    intent.putExtra("arcid", tempData.getNewArcid());
                     intent.putExtra("typeid", getTypeId());
                     intent.putExtra("url", tempData.getNewUrl());
                     intent.putExtra("title", tempData.getNewTitle());
                     intent.putExtra("date",tempData.getNewDate());
+                    intent.putExtra("favorite", tempData.getIsFavorite());
                     //更新本地数据库
                     dbManager.closeDB();
                     getActivity().startActivity(intent);
@@ -369,13 +371,14 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 String content = dbManager.getContent(arcid);
-
                 intent = new Intent(getContext(), ContentActivity.class);
+                intent.putExtra("arcid", datas.get(position).getNewArcid());
                 intent.putExtra("content",  content);
                 intent.putExtra("url", datas.get(position).getNewUrl());
                 intent.putExtra("title", datas.get(position).getNewTitle());
                 intent.putExtra("typeid", getTypeId());;
                 intent.putExtra("date", datas.get(position).getNewDate());
+                intent.putExtra("favorite", datas.get(position).getIsFavorite());
                 dbManager.closeDB();
                 startActivity(intent);
         }else{

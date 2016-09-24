@@ -23,6 +23,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
+import com.liuliugeek.sanc.news.Model.Data;
 import com.liuliugeek.sanc.news.MyHttp.MyHttp;
 import com.liuliugeek.sanc.news.R;
 
@@ -91,9 +93,18 @@ public class ContentActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_content, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_favorite);
+        if(bundle.getInt("favorite") == 1){
+            menuItem.setTitle("取消收藏");
+        }
         return true;
     }
 
@@ -105,9 +116,32 @@ public class ContentActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_share) {
             shareMsg(ContentActivity.this, bundle.getString("title"), bundle.getString("title"), bundle.getString("title") + bundle.getString("url") + "（来自扬大新闻客户端）", "");
             return true;
+        }
+
+        if(id == R.id.action_favorite){
+            NewsDbManager dbManager = new NewsDbManager(ContentActivity.this);
+            //取消收藏
+            if(bundle.getInt("favorite") == 1){
+                dbManager.removeFavorite( bundle.getInt("arcid"));
+                item.setTitle("收藏");
+                //刷新菜单
+                invalidateOptionsMenu();
+            }else{
+                Data data = new Data();
+                data.setNewArcid(bundle.getInt("arcid"));
+                data.setNewTitle(bundle.getString("title"));
+                data.setNewTypeid(bundle.getInt("typeid"));
+                data.setNewContent(bundle.getString("content"));
+                data.setNewUrl(bundle.getString("url"));
+                data.setNewDate(bundle.getString("date"));
+                dbManager.addToFavorites(data);
+                item.setTitle("取消收藏");
+                //刷新菜单
+                invalidateOptionsMenu();
+            }
         }
 
         return super.onOptionsItemSelected(item);

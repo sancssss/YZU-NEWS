@@ -38,6 +38,10 @@
             android:name=".Activity.ContentActivity"
             android:label="@string/title_activity_content" >
         </activity>
+        <activity
+            android:name=".Activity.FavoritesActivity"
+            android:label="@string/title_activity_favorites" >
+        </activity>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ public class Data {
     private int newTypeid;
     private int newArcid;
     private String date;
+    private int isFavorite;
 
     public Data(String newTitle, String newContent){
         this.newContent = newContent;
@@ -40,6 +41,10 @@ public class Data {
         return this.date;
     }
 
+    public int getIsFavorite() {
+        return isFavorite;
+    }
+
     public void setNewTitle(String newTitle) {
         this.newTitle = newTitle;
     }
@@ -62,5 +67,9 @@ public class Data {
 
     public void setNewDate(String date){
         this.date = date;
+    }
+
+    public void setIsFavorite(int isFavorite) {
+        this.isFavorite = isFavorite;
     }
 }

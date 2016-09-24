@@ -11,6 +11,7 @@ import com.liuliugeek.sanc.news.Model.Data;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by 73732 on 2016/8/28.
@@ -20,7 +21,7 @@ public class NewsDbManager {
     private SQLiteDatabase db;
 
     public NewsDbManager(Context context){
-        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 4);
+        dbHelper = new NewsDatabaseHelper(context, "news.db", null, 1);
         db = dbHelper.getWritableDatabase();
     }
 
@@ -28,7 +29,7 @@ public class NewsDbManager {
         db.beginTransaction();
         try{
             for(Data data : datas){
-                db.execSQL("INSERT INTO news VALUES(null, ?, ?, ?, ?, ?, ?)", new Object[]{data.getNewTypeid(),data.getNewArcid(),data.getNewUrl(),data.getNewDate(),data.getNewTitle(),data.getNewContent()});
+                db.execSQL("INSERT INTO news VALUES(null, ?, ?, ?, ?, ?, ?, ?)", new Object[]{data.getNewTypeid(),data.getNewArcid(),data.getNewUrl(),data.getNewDate(),data.getNewTitle(),data.getNewContent()});
             }
             db.setTransactionSuccessful();
         }finally {
@@ -47,10 +48,61 @@ public class NewsDbManager {
             data.setNewDate(cursor.getString(cursor.getColumnIndex("news_date")));
             data.setNewTitle(cursor.getString(cursor.getColumnIndex("news_title")));
             data.setNewContent(cursor.getString(cursor.getColumnIndex("news_content")));
+            data.setIsFavorite(cursor.getInt(cursor.getColumnIndex("news_isfavorite")));
             datas.add(data);
         }
         cursor.close();
         return datas;
+    }
+
+
+    public HashMap<String, Integer> getSetting(){
+        Cursor cursor = db.rawQuery("select * from setting", null);
+        cursor.moveToFirst();
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("setting_diaplay_pic", cursor.getInt(cursor.getColumnIndex("setting_diaplay_pic")));
+        map.put("setting_theme_id", cursor.getInt(cursor.getColumnIndex("setting_theme_id")));
+        return map;
+    }
+
+    public ArrayList<Data> queryFavorites(){
+        ArrayList<Data> datas = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from favorite", null);
+        while(cursor.moveToNext()){
+            Data data = new Data();
+            data.setNewArcid(cursor.getInt(cursor.getColumnIndex("news_arcid")));
+            data.setNewTypeid(cursor.getInt(cursor.getColumnIndex("news_typeid")));
+            data.setNewUrl(cursor.getString(cursor.getColumnIndex("news_url")));
+            data.setNewDate(cursor.getString(cursor.getColumnIndex("news_date")));
+            data.setNewTitle(cursor.getString(cursor.getColumnIndex("news_title")));
+            data.setNewContent(cursor.getString(cursor.getColumnIndex("news_content")));
+            datas.add(data);
+        }
+        cursor.close();
+        return datas;
+    }
+
+    /**
+     * 加入一条data数据到favorite表,更新news对应arcid相同的数据的isfavorite为1
+     * @param data
+     */
+    public void addToFavorites(Data data){
+        db.beginTransaction();
+        try{
+            db.execSQL("INSERT INTO favorite VALUES(null, ?, ?, ?, ?, ?, ?)", new Object[]{data.getNewTypeid(),data.getNewArcid(),data.getNewUrl(),data.getNewDate(),data.getNewTitle(),data.getNewContent()});
+            ContentValues val = new ContentValues();
+            //要修改的内容
+            val.put("news_isfavorite", 1);
+            //数组内是条件
+            db.update("news", val, "news_arcid = ?", new String[]{String.valueOf(data.getNewTypeid())});
+            db.setTransactionSuccessful();
+        }finally {
+            db.endTransaction();
+        }
+    }
+
+    public void removeFavorite(int arcid){
+        db.execSQL("delete from favorite where news_arcid = " + arcid);
     }
 
     //利用arcid更新
@@ -110,7 +162,7 @@ public class NewsDbManager {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date(System.currentTimeMillis());
         String dateStr = format.format(date);
-        Log.v("date_now",dateStr);
+        Log.v("date_now", dateStr);
         if(cursor.getString(cursor.getColumnIndex("date")) == null || !cursor.getString(cursor.getColumnIndex("date")).equals(dateStr)){
             return false;
         }else{
@@ -132,6 +184,8 @@ public class NewsDbManager {
         //数组内是条件
         db.update("board", val, "board_id = ?", new String[]{String.valueOf(typeid)});
     }
+
+
     public void closeDB(){
         db.close();
     }
