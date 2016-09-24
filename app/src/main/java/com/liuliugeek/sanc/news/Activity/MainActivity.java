@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.navigation_item_setting:
-                        Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                         startActivity(intent);
                         break;
                     case R.id.navigation_item_about:

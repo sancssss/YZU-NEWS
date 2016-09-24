@@ -252,6 +252,12 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         dbManager = new NewsDbManager(getActivity());
         //没有刷新并且列表不为空才会调用
         Log.v("is_list_empty", String.valueOf(dbManager.isListEmpty(getTypeId())));
+        Log.v("getTypeId", String.valueOf(getTypeId()));
+        //丢失现场则从Bundle恢复现场
+        if(getTypeId() == 0){
+            setTypeID(savedInstanceState.getInt("typeId"));
+            datas = (ArrayList<Data>) savedInstanceState.getSerializable("datas");
+        }
         if (!dbManager.isRefresh(getTypeId()) || dbManager.isListEmpty(getTypeId())){
             ptrClassicFrameLayout.postDelayed(new Runnable() {
                 @Override
@@ -306,7 +312,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     }
 
     public void refreshListData(){
-        dbManager = new NewsDbManager(getActivity());
+        //dbManager = new NewsDbManager(getActivity());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -330,7 +336,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     }
 
     public void refreshSpecialListData(){
-        dbManager = new NewsDbManager(getActivity());
+        //dbManager = new NewsDbManager(getActivity());
         //fragmentManager = getFragmentManager();
         new Thread(new Runnable() {
             @Override
@@ -364,7 +370,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             //从网址中获取arcid
                 int arcid = datas.get(position).getNewArcid();
                 //Log.v("arcid", String.valueOf(arcid));
-                dbManager = new NewsDbManager(this.getActivity());
                 //本地数据库存有文章
                 //Log.v("is_content_empty","now is local datas");
                 //int position = msg.arg1;
@@ -497,6 +502,24 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             }).start();
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.v("onSaveInstanceState", String.valueOf(typeid));
+        outState.putInt("typeId", this.typeid);
+        outState.putSerializable("datas", datas);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //恢复现场
+        Log.v("onActivitycreate","onActivitycreate");
+        if(getTypeId() == 0 ){
+            setTypeID(savedInstanceState.getInt("typeId"));
+        }
+        dbManager = new NewsDbManager(getActivity());
     }
 
     private String getDate(){

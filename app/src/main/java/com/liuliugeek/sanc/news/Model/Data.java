@@ -1,9 +1,11 @@
 package com.liuliugeek.sanc.news.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by 73732 on 2016/8/19.
  */
-public class Data {
+public class Data implements Serializable{
     private String newTitle;
     private String newContent;
     private String newUrl;

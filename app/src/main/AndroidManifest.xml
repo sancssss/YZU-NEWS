@@ -42,6 +42,10 @@
             android:name=".Activity.FavoritesActivity"
             android:label="@string/title_activity_favorites" >
         </activity>
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

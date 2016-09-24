@@ -151,6 +151,12 @@ public class ContentActivity extends AppCompatActivity {
             }
             dbManager.closeDB();
         }
+
+        if(id == R.id.action_open_url){
+            Uri uri = Uri.parse(bundle.getString("url"));
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 
