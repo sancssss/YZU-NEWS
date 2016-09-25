@@ -15,5 +15,6 @@
     <string name="title_activity_favorites">FavoritesActivity</string>
     <string name="app_version">V2.0Beta</string>
     <string name="splash_app_name">扬大新闻客户端</string>
+    <string name="action_exit">退出</string>
 
 </resources>

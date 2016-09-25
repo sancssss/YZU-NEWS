@@ -1,9 +1,14 @@
 <resources>
-
     <color name="black_overlay">#66000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="color_primary">#2196F3</color>
-    <color name="color_primaryDark">#1976D2</color>
-    <color name="color_accent">#2196F3</color>
+    <color name="color_primary">#4CAF50</color>
+    <color name="color_primaryDark">#388E3C</color>
+    <color name="color_accent">#8BC34A</color>
     <color name="black">#000000</color>
+    <color name="background">#f1f1f1</color>
+    <color name="background_card">#ffffff</color>
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="tabBarColorSelect">#ffffff</color>
+    <color name="tabBarColorNotSelect">#a5d7a7</color>
 </resources>

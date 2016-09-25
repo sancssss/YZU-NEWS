@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        super.onResume();;
+        super.onResume();
     }
 
     @Override
@@ -101,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case android.R.id.home:
-
+            case R.id.action_exit:
+                finish();
                 return true;
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -117,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void blindView(){
-
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         tabLayout = (TabLayout) findViewById(R.id.tab_FindFragment_title);
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void init(){
-        //启动db manage
         drawerListDatas = new ArrayList<>();
         initDrawerList();
         toolbar.setTitle("扬大新闻");
@@ -154,29 +153,11 @@ public class MainActivity extends AppCompatActivity {
         };
         setupDrawerContent(navigationView);
         fragmentManager = getSupportFragmentManager();
-       // sendMsgToUpdate(3, 0);
     }
 
 
 
     private void setOnC(){
-       /* openMenuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(mDrawerList);
-            }
-        });
-
-        refreshBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.v("mainactity", String.valueOf(MainActivity.this.nowtypeid));
-                dbManager.deleteContent(MainActivity.this.nowtypeid);
-                Toast.makeText(MainActivity.this, "正在获取最新新闻···", Toast.LENGTH_SHORT).show();
-                sendMsgToUpdate(3, 0);
-            }
-        });
-        */
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -216,10 +197,15 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent2);
                         break;
                     case R.id.navigation_item_theme:
-
+                        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        }else{
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        }
+                        MainActivity.this.recreate();
                         break;
                     default:
-                        Log.v("navigationView","ni click navi");
+                        Log.v("navigationView", "ni click navi");
                 }
                 mDrawerLayout.closeDrawers();
                 return true;

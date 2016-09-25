@@ -86,7 +86,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             switch (msg.what){
                 case SHOW_CONTENT:
                     int position = msg.arg1;
-                    NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
                     android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                     Bundle bd = new Bundle();
                     intent = new Intent(getContext(), ContentActivity.class);
@@ -375,8 +374,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 //本地数据库存有文章
                 //Log.v("is_content_empty","now is local datas");
                 //int position = msg.arg1;
-                NewContentFragemnt newContentFragemnt = new NewContentFragemnt();
-                android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 String content = dbManager.getContent(arcid);
                 intent = new Intent(getContext(), ContentActivity.class);
                 intent.putExtra("arcid", datas.get(position).getNewArcid());

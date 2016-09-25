@@ -24,10 +24,6 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
             + "board_id integer primary key, "
             + "board_name text, "
             + "date text) ";
-    public static final String CREATE_SETTING = "create table setting("
-            + "setting_id integer primary key, "
-            + "setting_diaplay_pic integer, "
-            + "setting_theme_id integer) ";
     public static final String CREATE_FAVORITE = "create table favorite("
             + "news_id integer primary key autoincrement, "
             + "news_typeid integer, "
@@ -46,7 +42,6 @@ public class NewsDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BOARD);
         db.execSQL(CREATE_NEWS);
-        db.execSQL(CREATE_SETTING);
         db.execSQL(CREATE_FAVORITE);
         db.execSQL("insert into board (board_id, board_name) values(?, ?)",
                 new String[] { "3","扬大要闻" });

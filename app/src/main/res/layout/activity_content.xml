@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/news_content_title"
-                android:textColor="@color/black"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="@dimen/abc_text_size_headline_material"
                 android:text="title"
                 android:gravity="left"/>
@@ -33,11 +33,13 @@
                 android:id="@+id/news_content_date"
                 android:textSize="@dimen/abc_text_size_subtitle_material_toolbar"
                 android:text="2016-1-1"
+                android:textColor="@color/textColorSecondary"
                 android:gravity="left"/>
             <TextView
                 android:layout_width="match_parent"
                 android:text="loading..."
-                android:layout_height="match_parent" android:textColor="@color/black"
+                android:layout_height="match_parent"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="20dp"
                 android:id="@+id/news_content"/>
         </LinearLayout>

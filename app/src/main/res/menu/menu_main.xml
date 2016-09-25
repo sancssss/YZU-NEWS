@@ -3,11 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_about" android:title="@string/action_about"
+<item android:id="@+id/action_about" android:title="@string/action_about"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item
-        android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_refresh_black_48dp"
-        app:showAsAction="always"
-        android:title="@string/action_refresh"/>
+<item android:id="@+id/action_exit" android:title="@string/action_exit"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

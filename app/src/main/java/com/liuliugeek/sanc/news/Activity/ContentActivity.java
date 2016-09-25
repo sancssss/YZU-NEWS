@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,10 +68,12 @@ public class ContentActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
         intent = getIntent();
         bundle = intent.getExtras();
         File dirFile = new File((Environment.getExternalStorageDirectory()) + "/yzunew_pic/");
@@ -82,6 +86,13 @@ public class ContentActivity extends AppCompatActivity {
         toolbar.setTitle(bundle.getString("title"));
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentActivity.this.finish();
+            }
+        });
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         screenWidth = display.getWidth();
@@ -233,6 +244,9 @@ public class ContentActivity extends AppCompatActivity {
             if (file.exists()) {
                 drawable = Drawable.createFromPath(file.getAbsolutePath());
                 //2k 1080p屏幕适配
+                if(drawable == null){
+                    return drawable;
+                }
                 if (screenHeight > 1600 && screenWidth > 900) {
                     drawable.setBounds(0, 0, drawable.getIntrinsicWidth() * 4 , drawable.getIntrinsicHeight() * 4);
                 } else {
