@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -89,7 +88,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                     Bundle bd = new Bundle();
                     intent = new Intent(getContext(), ContentActivity.class);
-                    dbManager = new NewsDbManager(getActivity());
                     Data tempData = datas.get(position);
                     if(getTypeId() < 100){
                         parseContentDom = (ParseContentDom)msg.obj;
@@ -107,7 +105,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     intent.putExtra("date",tempData.getNewDate());
                     intent.putExtra("favorite", tempData.getIsFavorite());
                     //更新本地数据库
-                    dbManager.closeDB();
                     getActivity().startActivity(intent);
                     /*
                    // Log.v("update_news",parseContentDom.getContent());
@@ -158,7 +155,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     break;
                 case REFRESH_LIST:
                     //parseListDom.getUrlList();
-                    dbManager = new NewsDbManager(getActivity());
                     datas = new ArrayList<>();
                     tempTitleList = new ArrayList<>();
                     tempUrlList = new ArrayList<>();
@@ -200,12 +196,11 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     dbManager.setBoardRefreshDate(getTypeId(), getDate());
                     //将数据存进本地数据库
                     dbManager.add(datas);
-                    dbManager.closeDB();
                     newsAdapter.notifyDataSetChanged();
                     THREAD_COUNT=0;
                     break;
                 case SHOW_ERROR_NETWORK:
-                    Snackbar.make(view, "网络错误！", Snackbar.LENGTH_SHORT).show();
+                   // Snackbar.make(view, "网络错误！", Snackbar.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -225,6 +220,18 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        dbManager = new NewsDbManager(getActivity());
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroyView();
+        dbManager.closeDB();
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -250,7 +257,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         ptrClassicFrameLayout.setKeepHeaderWhenRefresh(true);
         ptrClassicFrameLayout.setLoadingMinTime(2000);
         //判断今天是否刷新决定是否自动刷新
-        dbManager = new NewsDbManager(getActivity());
         //没有刷新并且列表不为空才会调用
         Log.v("is_list_empty", String.valueOf(dbManager.isListEmpty(getTypeId())));
         Log.v("getTypeId", String.valueOf(getTypeId()));
@@ -270,7 +276,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             newsAdapter = new NewsAdapter(datas, getActivity());
             newsList.setAdapter(newsAdapter);
         }
-        dbManager.closeDB();
         ptrClassicFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
@@ -313,7 +318,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     }
 
     public void refreshListData(){
-        //dbManager = new NewsDbManager(getActivity());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -337,7 +341,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     }
 
     public void refreshSpecialListData(){
-        //dbManager = new NewsDbManager(getActivity());
         //fragmentManager = getFragmentManager();
         new Thread(new Runnable() {
             @Override
@@ -366,7 +369,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
     public void sendMsgToGetContent(int position){
         //Log.v("sub_String_content", datas.get(position).getNewContent().substring(0, 4));
         //Log.v("news_arcid", String.valueOf(datas.get(position).getNewArcid()));
-        dbManager = new NewsDbManager(getActivity());
         if(!dbManager.isContentEmpty(datas.get(position).getNewArcid())){
             //从网址中获取arcid
                 int arcid = datas.get(position).getNewArcid();
@@ -383,7 +385,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                 intent.putExtra("typeid", getTypeId());;
                 intent.putExtra("date", datas.get(position).getNewDate());
                 intent.putExtra("favorite", datas.get(position).getIsFavorite());
-                dbManager.closeDB();
                 startActivity(intent);
         }else{
             if(null != MyHttp.getActiveNetwork(getActivity())){
@@ -518,7 +519,6 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
         if(getTypeId() == 0 ){
             setTypeID(savedInstanceState.getInt("typeId"));
         }
-        dbManager = new NewsDbManager(getActivity());
     }
 
     private String getDate(){

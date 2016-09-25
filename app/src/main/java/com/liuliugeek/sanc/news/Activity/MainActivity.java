@@ -138,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
         }
         tabLayout.setTabGravity(TabLayout.MODE_SCROLLABLE);
         pagerAdapter = new com.liuliugeek.sanc.news.Adapter.PagerAdapter(getSupportFragmentManager(), drawerListDatas, MainActivity.this);
+        pager.setOffscreenPageLimit(1);
         pager.setAdapter(pagerAdapter);
+
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name){
             @Override
