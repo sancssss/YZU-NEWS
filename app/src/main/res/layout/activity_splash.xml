@@ -14,6 +14,7 @@
         android:background="@color/color_primaryDark"
         android:textSize="30sp"/>
     <TextView
+        android:id="@+id/splash_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

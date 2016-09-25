@@ -1,9 +1,7 @@
 package com.liuliugeek.sanc.news.Activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -19,15 +17,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
-import com.liuliugeek.sanc.news.Model.Data;
 import com.liuliugeek.sanc.news.Model.DrawerListData;
-import com.liuliugeek.sanc.news.MyHttp.MyHttp;
-import com.liuliugeek.sanc.news.Parse.ParseListDom;
 import com.liuliugeek.sanc.news.R;
 
 import java.util.ArrayList;
@@ -35,32 +27,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SHOW_LIST = 0;
-    private static final int SHOW_ERROR_NETWORK = 1;
-    //private static final int SHOW_CONTENT = 1;
-
-    private Context mContext;
-    private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar toolbar;
-    private AnimationDrawable animationDrawable;
-
-    private Button openMenuBtn;
-    private Button refreshBtn;
-
-    private ArrayList<Data> datas = null;
 
     private FragmentManager fragmentManager = null;
     private long exitTime = 0;
-
-    private MyHttp myHttp;
-    private ParseListDom parseListDom;
-
-    private NewsDbManager dbManager;
-    //当前标题名称
-    public int nowtypeid;
-    public int nowtitleid;
 
     private ViewPager pager;
     private TabLayout tabLayout;
@@ -79,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         init();
         setOnC();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();;
     }
 
     @Override
@@ -128,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_settings:
-                Intent intent = new Intent(this, SettingActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.action_about:
@@ -151,10 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
         //启动db manage
-        dbManager = new NewsDbManager(this);
         drawerListDatas = new ArrayList<>();
         initDrawerList();
-        mContext = MainActivity.this;
         toolbar.setTitle("扬大新闻");
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
@@ -239,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_item_favorite:
                         Intent intent2 = new Intent(MainActivity.this, FavoritesActivity.class);
                         startActivity(intent2);
+                        break;
+                    case R.id.navigation_item_theme:
+
                         break;
                     default:
                         Log.v("navigationView","ni click navi");

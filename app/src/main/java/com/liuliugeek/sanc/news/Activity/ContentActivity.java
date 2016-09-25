@@ -2,6 +2,7 @@ package com.liuliugeek.sanc.news.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -92,7 +94,14 @@ public class ContentActivity extends AppCompatActivity {
         newsDate.setText("时间：" + bundle.getString("date"));
         URLImageParser parser = new URLImageParser(newsContent, this);
         Spanned htmlSpanned = Html.fromHtml(content, parser, null);
-        newsContent.setText(htmlSpanned);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean enableDisplayPic = sharedPreferences.getBoolean("display_pic", true);
+        if(enableDisplayPic){
+            newsContent.setText(htmlSpanned);
+        }else{
+            newsContent.setText(Html.fromHtml(content));
+        }
         //Log.v("spannd",spanned.toString());
         //获取bd对象
     }

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -18,7 +19,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liuliugeek.sanc.news.Activity.ContentActivity;
 import com.liuliugeek.sanc.news.Adapter.NewsAdapter;
@@ -68,6 +68,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
 
     private TextView loadMoreTextView;
     private View loadMoreView;
+    private View view;
     private PtrClassicFrameLayout ptrClassicFrameLayout;
 
     private int visibleLastIndex = 0;
@@ -158,6 +159,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     break;
                 case REFRESH_LIST:
                     //parseListDom.getUrlList();
+                    dbManager = new NewsDbManager(getActivity());
                     datas = new ArrayList<>();
                     tempTitleList = new ArrayList<>();
                     tempUrlList = new ArrayList<>();
@@ -204,7 +206,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
                     THREAD_COUNT=0;
                     break;
                 case SHOW_ERROR_NETWORK:
-                    Toast.makeText(getActivity(), "网络错误！", Toast.LENGTH_LONG).show();
+                    Snackbar.make(view, "网络错误！", Snackbar.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -298,7 +300,7 @@ public class NewsListFragment extends Fragment implements AbsListView.OnScrollLi
             }
         });
 
-
+        this.view = view;
         return view;
     }
 

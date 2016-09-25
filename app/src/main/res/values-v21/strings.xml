@@ -13,7 +13,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="newsname">新闻中心</string>
     <string name="title_activity_favorites">FavoritesActivity</string>
-    <string name="app_version">V2.0Beta</string>
-    <string name="splash_app_name">扬大新闻客户端</string>
 
 </resources>

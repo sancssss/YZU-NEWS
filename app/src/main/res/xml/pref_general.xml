@@ -8,7 +8,7 @@
         android:summary="新闻内容页面显示图片(关闭不再加载图片)"
         android:defaultValue="true" />
     <Preference
-        android:key="pic_cache"
+        android:key="clean_pic_cache"
         android:title="清除缓存"
         android:summary="清除图片缓存"
         />

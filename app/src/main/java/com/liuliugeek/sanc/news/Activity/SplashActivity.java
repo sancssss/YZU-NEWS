@@ -1,13 +1,13 @@
 package com.liuliugeek.sanc.news.Activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.liuliugeek.sanc.news.DBManager.NewsDbManager;
 import com.liuliugeek.sanc.news.Model.Data;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class SplashActivity extends Activity{
+public class SplashActivity extends AppCompatActivity {
     private final static int UPDATE_INDEX_DATA = 0;
     private static final int SHOW_ERROR_NETWORK = 1;
     private MyHttp myHttp;
@@ -31,7 +31,7 @@ public class SplashActivity extends Activity{
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case SHOW_ERROR_NETWORK:
-                    Toast.makeText(SplashActivity.this, "网络错误", Toast.LENGTH_LONG).show();
+                    Snackbar.make(getWindow().getDecorView(), "网络错误！", Snackbar.LENGTH_SHORT).show();
                     break;
             }
 

@@ -8,11 +8,14 @@
     android:orientation="vertical"
     android:gravity="center"
     >
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="扬大新闻客户端V2.0"
+        android:text="@string/splash_app_name"
         android:id="@+id/yzu_name"
         android:gravity="center"
         android:padding="20dp"
@@ -20,14 +23,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="By Sanc"
+        android:text="@string/app_version"
         android:gravity="center"
         android:padding="20dp"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="mail:sancssss@1996gmail.com"
+        android:text="sancssss@1996gmail.com"
         android:gravity="center"
         android:padding="20dp"
         />
