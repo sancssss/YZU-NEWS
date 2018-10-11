@@ -1,7 +1,7 @@
 # YZU-NEWS
 ## YZU News Android Client
-* he news data was crawled from Yangzhou University's official website [www.yzu.edu.cn] (http://www.yzu.edu.cn/) and [news.yzu.edu.cn] ](http://news.yzu.edu.cn/)
-* ListView display list data, [android-Ultra-Pull-To-Refresh] (https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh) Implement pull-down refresh
+* he news data was crawled from Yangzhou University's official website [www.yzu.edu.cn](http://www.yzu.edu.cn/) and [news.yzu.edu.cn](http://news.yzu.edu.cn/)
+* ListView display list data, [android-Ultra-Pull-To-Refresh](https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh) Implement pull-down refresh
 * CardView displays data items, NavigationView and DrawerLayout implement sidebar
 * ViewPager and TabLayout implement the home page interface
 * SQLite cache network data, local memory card cache news images
